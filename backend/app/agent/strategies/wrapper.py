@@ -1,70 +1,96 @@
-import os
-from typing import Dict, Any
+import json
+import logging
+import re
+from typing import Any, Dict, List, Tuple
 
-from openai import OpenAI
-from starlette.concurrency import run_in_threadpool
-
-from ..exceptions import ProviderError
-from ..providers.base import Provider, EmbeddingProvider
-from ...core import settings
-
-
-class OpenAIProvider(Provider):
-    def __init__(self, api_key: str | None = None, model_name: str = settings.LL_MODEL,
-                 opts: Dict[str, Any] = None):
-        if opts is None:
-            opts = {}
-        api_key = api_key or settings.LLM_API_KEY or os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ProviderError("OpenAI API key is missing")
-        self._client = OpenAI(api_key=api_key)
-        self.model = model_name
-        self.opts = opts
-        self.instructions = ""
+from .base import Strategy
+from ..providers.base import Provider
+from ..exceptions import StrategyError
 
 
-    def _generate_sync(self, prompt: str, options: Dict[str, Any]) -> str:
+logger = logging.getLogger(__name__)
+
+# Precompiled for performance; matches ```json ... ``` or ``` ... ``` fenced blocks
+FENCE_PATTERN = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
+
+
+class JSONWrapper(Strategy):
+    async def __call__(
+        self, prompt: str, provider: Provider, **generation_args: Any
+    ) -> Dict[str, Any]:
+        """
+        Wrapper strategy to format the prompt as JSON with the help of LLM.
+        """
+        response = await provider(prompt, **generation_args)
+        response = response.strip()
+        logger.info(f"provider response: {response}")
+
+        # 1) Try direct parse first
         try:
-            response = self._client.responses.create(
-                model=self.model,
-                instructions=self.instructions,
-                input=prompt,
-                **options,
+            return json.loads(response)
+        except json.JSONDecodeError:
+            pass
+
+        # 2) If wrapped in fenced code blocks, try all and return the first valid JSON
+        #    Matches ```json\n...``` or ```\n...``` variants
+        for fence_match in FENCE_PATTERN.finditer(response):
+            fenced = fence_match.group(1).strip()
+            try:
+                return json.loads(fenced)
+            except json.JSONDecodeError:
+                continue
+
+        # 3) Fallback: extract the largest JSON-looking object block { ... }
+        obj_start, obj_end = response.find("{"), response.rfind("}")
+
+        candidates: List[Tuple[int, str]] = []
+        if obj_start != -1 and obj_end != -1 and obj_end > obj_start:
+            candidates.append((obj_start, response[obj_start : obj_end + 1]))
+
+        for _, candidate in candidates:
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                candidate2 = candidate.replace("```", "").strip()
+                try:
+                    return json.loads(candidate2)
+                except json.JSONDecodeError:
+                    continue
+
+        if candidates:
+            # If we had candidates but none parsed, log the last error contextfully
+            _err_preview = response if len(response) <= 2000 else response[:2000] + "... (truncated)"
+            logger.error(
+                "provider returned non-JSON. failed to parse candidate blocks - response: %s",
+                _err_preview,
             )
-            return response.output_text
-        except Exception as e:
-            raise ProviderError(f"OpenAI - error generating response: {e}") from e
-    async def __call__(self, prompt: str, **generation_args: Any) -> str:
-        if generation_args:
-            logger.warning(f"OpenAIProvider - generation_args not used {generation_args}")
-        myopts = {
-            "temperature": self.opts.get("temperature", 0),
-            "top_p": self.opts.get("top_p", 0.9),
-# top_k not currently supported by any OpenAI model - https://community.openai.com/t/does-openai-have-a-top-k-parameter/612410
-#            "top_k": generation_args.get("top_k", 40),
-# neither max_tokens
-#            "max_tokens": generation_args.get("max_length", 20000),
-        }
-        return await run_in_threadpool(self._generate_sync, prompt, myopts)
+            raise StrategyError("JSON parsing error: failed to parse candidate JSON blocks")
+
+        # 4) No braces found: fail clearly
+        logger.error(
+            "provider response contained no JSON object braces: %s", response
+        )
+        raise StrategyError("JSON parsing error: no JSON object detected in provider response")
 
 
-class OpenAIEmbeddingProvider(EmbeddingProvider):
-    def __init__(
-        self,
-        api_key: str | None = None,
-        embedding_model: str = settings.EMBEDDING_MODEL,
-    ):
-        api_key = api_key or settings.EMBEDDING_API_KEY or os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ProviderError("OpenAI API key is missing")
-        self._client = OpenAI(api_key=api_key)
-        self._model = embedding_model
-
-    async def embed(self, text: str) -> list[float]:
+class MDWrapper(Strategy):
+    async def __call__(
+        self, prompt: str, provider: Provider, **generation_args: Any
+    ) -> Dict[str, Any]:
+        """
+        Wrapper strategy to format the prompt as Markdown with the help of LLM.
+        """
+        logger.info(f"prompt given to provider: \n{prompt}")
+        response = await provider(prompt, **generation_args)
+        logger.info(f"provider response: {response}")
         try:
-            response = await run_in_threadpool(
-                self._client.embeddings.create, input=text, model=self._model
+            response = (
+                "```md\n" + response + "```" if "```md" not in response else response
             )
-            return response.data[0].embedding
+            return response
         except Exception as e:
-            raise ProviderError(f"OpenAI - error generating embedding: {e}") from e
+            logger.error(
+                f"provider returned non-md. parsing error: {e} - response: {response}"
+            )
+            raise StrategyError(f"Markdown parsing error: {e}") from e
+
