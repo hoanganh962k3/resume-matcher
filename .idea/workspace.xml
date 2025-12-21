@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="77076302-fc21-4de4-b84b-98f68e586e03" name="Changes" comment="Tommy Le - Remove API key" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="develop" />
+              </list>
+            </value>
+          </entry>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/develop" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;hoanganh962k3&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/hoanganh962k3/resume-matcher.git&quot;,
+    &quot;accountId&quot;: &quot;3a8067f5-a1ea-42b4-974f-fbe25b46627d&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="36m0gaQwOUxE4fgtw1zZoGIODRs" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app.main.executor": "Run",
+    "Python.main (1).executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "develop"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\anhlh\PycharmProjects\resume-matcher\backend\app" />
+      <recent name="C:\Users\anhlh\PycharmProjects\resume-matcher\backend\app\api\router" />
+      <recent name="C:\Users\anhlh\PycharmProjects\resume-matcher\backend\app\api" />
+      <recent name="C:\Users\anhlh\PycharmProjects\resume-matcher\backend\app\agent" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="resume-matcher" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend/app/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="77076302-fc21-4de4-b84b-98f68e586e03" name="Changes" comment="" />
+      <created>1765596551625</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1765596551625</updated>
+    </task>
+    <task id="LOCAL-00001" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1765597999039</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1765597999039</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Tommy - create model">
+      <option name="closed" value="true" />
+      <created>1765598130688</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1765598130688</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Tommy - create schemas json">
+      <option name="closed" value="true" />
+      <created>1765684609658</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765684609658</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Tommy - create prompt folder">
+      <option name="closed" value="true" />
+      <created>1765685032078</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1765685032078</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Tommy Le - create OpenAi LLM">
+      <option name="closed" value="true" />
+      <created>1765729108574</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1765729108574</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Tommy Le - create OpenAi LLM strategies">
+      <option name="closed" value="true" />
+      <created>1765732748164</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765732748164</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Tommy Le - structure and types of data for API requests, LLM responses">
+      <option name="closed" value="true" />
+      <created>1765982545921</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765982545921</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Tommy Le - create service">
+      <option name="closed" value="true" />
+      <created>1765984182652</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765984182652</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Tommy Le - Finish the pydantic">
+      <option name="closed" value="true" />
+      <created>1766284756806</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1766284756806</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Tommy Le - Finish BE">
+      <option name="closed" value="true" />
+      <created>1766294515055</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1766294515055</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Tommy Le - Update LLM provider">
+      <option name="closed" value="true" />
+      <created>1766303268156</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1766303268156</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Tommy Le - Remove API key">
+      <option name="closed" value="true" />
+      <created>1766303510459</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1766303510459</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="first commit" />
+    <MESSAGE value="Tommy - create model" />
+    <MESSAGE value="Tommy - create schemas json" />
+    <MESSAGE value="Tommy - create prompt folder" />
+    <MESSAGE value="Tommy Le - create OpenAi LLM" />
+    <MESSAGE value="Tommy Le - create OpenAi LLM strategies" />
+    <MESSAGE value="Tommy Le - structure and types of data for API requests, LLM responses" />
+    <MESSAGE value="Tommy Le - create service" />
+    <MESSAGE value="Tommy Le - Finish the pydantic" />
+    <MESSAGE value="Tommy Le - Finish BE" />
+    <MESSAGE value="Tommy Le - Update LLM provider" />
+    <MESSAGE value="Tommy Le - Remove API key" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tommy Le - Remove API key" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/backend/app/models/job.py</url>
+          <line>54</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
