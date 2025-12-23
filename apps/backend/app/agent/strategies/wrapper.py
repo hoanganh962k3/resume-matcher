@@ -93,4 +93,3 @@ class MDWrapper(Strategy):
                 f"provider returned non-md. parsing error: {e} - response: {response}"
             )
             raise StrategyError(f"Markdown parsing error: {e}") from e
-

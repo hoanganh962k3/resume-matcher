@@ -10,11 +10,11 @@ from sqlalchemy.future import select
 from pydantic import ValidationError
 from typing import Dict, Optional
 
-from ..models import Resume, ProcessedResume
-from ..agent import AgentManager
-from ..prompt import prompt_factory
-from ..schemas.json import json_schema_factory
-from ..schemas.pydantic.structured_resume import StructuredResumeModel
+from app.models import Resume, ProcessedResume
+from app.agent import AgentManager
+from app.prompt import prompt_factory
+from app.schemas.json import json_schema_factory
+from app.schemas.pydantic import StructuredResumeModel
 from .exceptions import ResumeNotFoundError, ResumeValidationError
 
 logger = logging.getLogger(__name__)

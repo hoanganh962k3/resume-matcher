@@ -7,12 +7,12 @@ from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..prompt import prompt_factory
-from ..schemas.json import json_schema_factory
-from ..models import Job, Resume, ProcessedJob
+from app.agent import AgentManager
+from app.prompt import prompt_factory
+from app.schemas.json import json_schema_factory
+from app.models import Job, Resume, ProcessedJob
+from app.schemas.pydantic import StructuredJobModel
 from .exceptions import JobNotFoundError
-from ..agent import AgentManager
-from ..schemas.pydantic.structured_job import StructuredJobModel
 
 logger = logging.getLogger(__name__)
 
@@ -117,16 +117,12 @@ class JobService:
     ) -> Dict[str, Any] | None:
         """
         Uses the AgentManager+JSONWrapper to ask the LLM to
-        return the data in exact JSON schemas we need.
+        return the data in exact JSON schema we need.
         """
-        # Get the prompt template for structured job extraction
         prompt_template = prompt_factory.get("structured_job")
-        # Fill the template with:
-        #   {0} = the JSON schemas for a structured job (as a pretty-printed string)
-        #   {1} = the actual job description text to be parsed
         prompt = prompt_template.format(
-            json.dumps(json_schema_factory.get("structured_job"), indent=2),  # {0}: schemas
-            job_description_text,  # {1}: job description text
+            json.dumps(json_schema_factory.get("structured_job"), indent=2),
+            job_description_text,
         )
         logger.info(f"Structured Job Prompt: {prompt}")
         raw_output = await self.json_agent_manager.run(prompt=prompt)
