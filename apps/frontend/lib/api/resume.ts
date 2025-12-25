@@ -79,6 +79,33 @@ export async function improveResume(
     return data;
 }
 
+interface JobResponse {
+	request_id: string;
+	data: {
+		job_id: string;
+		raw_job: {
+			id: number;
+			resume_id: string;
+			content: string;
+			created_at: string;
+		};
+		processed_job: {
+			job_title: string;
+			company_profile: any;
+			location: any;
+			date_posted: string | null;
+			employment_type: string | null;
+			job_summary: string;
+			key_responsibilities: any;
+			qualifications: any;
+			compensation_and_benfits: any;
+			application_info: any;
+			extracted_keywords: any;
+			processed_at: string | null;
+		} | null;
+	};
+}
+
 /** Fetches a raw resume record for previewing the original upload */
 export async function fetchResume(resumeId: string): Promise<ResumeResponse['data']> {
 	const res = await fetch(`${API_URL}/api/v1/resumes?resume_id=${encodeURIComponent(resumeId)}`);
@@ -88,6 +115,19 @@ export async function fetchResume(resumeId: string): Promise<ResumeResponse['dat
 	const payload = (await res.json()) as ResumeResponse;
 	if (!payload?.data?.raw_resume?.content) {
 		throw new Error('Resume content is unavailable.');
+	}
+	return payload.data;
+}
+
+/** Fetches job details including processed data */
+export async function fetchJob(jobId: string): Promise<JobResponse['data']> {
+	const res = await fetch(`${API_URL}/api/v1/jobs?job_id=${encodeURIComponent(jobId)}`);
+	if (!res.ok) {
+		throw new Error(`Failed to load job (status ${res.status}).`);
+	}
+	const payload = (await res.json()) as JobResponse;
+	if (!payload?.data) {
+		throw new Error('Job data is unavailable.');
 	}
 	return payload.data;
 }

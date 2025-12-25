@@ -24,12 +24,12 @@ class Settings(BaseSettings):
     LLM_PROVIDER: Optional[str] = "openai"
     LLM_API_KEY: Optional[str] = None
     LLM_BASE_URL: Optional[str] = None
-    LL_MODEL: Optional[str] = "gemma3:4b"
+    LL_MODEL: Optional[str] = "gpt-4o-mini"
     # Default embedding provider mirrors LLM_PROVIDER and uses OpenAI by default.
     EMBEDDING_PROVIDER: Optional[str] = "openai"
     EMBEDDING_API_KEY: Optional[str] = None
     EMBEDDING_BASE_URL: Optional[str] = None
-    EMBEDDING_MODEL: Optional[str] = "dengcao/Qwen3-Embedding-0.6B:Q8_0"
+    EMBEDDING_MODEL: Optional[str] = "text-embedding-3-small"
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env"),

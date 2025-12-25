@@ -23,7 +23,11 @@ const acceptString = acceptedFileTypes.join(',');
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const API_RESUME_UPLOAD_URL = `${API_BASE_URL}/api/v1/resumes/upload`; // API endpoint
 
-export default function FileUpload() {
+interface FileUploadProps {
+	onResumeProcessed?: (resumeData: any) => void;
+}
+
+export default function FileUpload({ onResumeProcessed }: FileUploadProps = {}) {
 	const maxSize = 2 * 1024 * 1024; // 2MB
 
 	const [uploadFeedback, setUploadFeedback] = useState<{
@@ -80,7 +84,39 @@ export default function FileUpload() {
 			} catch (storageError) {
 				console.warn('Unable to persist resume ID to localStorage', storageError);
 			}
-			window.location.href = `/jobs`;
+			
+			// Fetch processed resume data
+			console.log('Fetching processed resume for ID:', resumeId);
+			if (onResumeProcessed) {
+				fetch(`${API_BASE_URL}/api/v1/resumes?resume_id=${resumeId}`)
+					.then(res => {
+						console.log('Resume fetch response status:', res.status);
+						return res.json();
+					})
+					.then(data => {
+						console.log('Resume fetch response data:', data);
+						if (data?.data?.processed_resume) {
+							const processed = data.data.processed_resume;
+							console.log('Processed resume data:', processed);
+							const resumeData = {
+								personalInfo: processed.personal_data || undefined,
+								workExperience: processed.experiences || [],
+								education: processed.education || [],
+								personalProjects: processed.projects || [],
+								additional: processed.skills || undefined,
+							};
+							console.log('Formatted resume data:', resumeData);
+							onResumeProcessed(resumeData);
+						} else {
+							console.warn('No processed_resume in response');
+						}
+					})
+					.catch(err => {
+						console.error('Failed to fetch processed resume:', err);
+					});
+			} else {
+				console.log('No onResumeProcessed callback provided');
+			}
 		},
 		onUploadError: (file, errorMsg) => {
 			console.error('Upload error:', file, errorMsg);

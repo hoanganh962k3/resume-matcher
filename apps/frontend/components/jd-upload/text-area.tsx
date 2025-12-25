@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useResumePreview } from '@/components/common/resume_previewer_context';
-import { uploadJobDescriptions, improveResume, fetchResume } from '@/lib/api/resume';
+import { uploadJobDescriptions, improveResume, fetchResume, fetchJob } from '@/lib/api/resume';
+import JobPreview from '@/components/dashboard/job-preview';
 
 type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';
 type ImprovementStatus = 'idle' | 'improving' | 'error';
@@ -16,6 +17,7 @@ export default function JobDescriptionUploadTextArea() {
 	const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>('idle');
 	const [improvementStatus, setImprovementStatus] = useState<ImprovementStatus>('idle');
 	const [jobId, setJobId] = useState<string | null>(null);
+	const [jobData, setJobData] = useState<any>(null);
 	const [resumeName, setResumeName] = useState<string | null>(null);
 	const [isViewingResume, setIsViewingResume] = useState(false);
 
@@ -51,6 +53,25 @@ export default function JobDescriptionUploadTextArea() {
 		setResumeName(resolvedName);
 		setResumeReady(true);
 	}, [resumeIdFromQuery]);
+
+	// Fetch job data when jobId changes
+	useEffect(() => {
+		if (!jobId) return;
+		
+		const loadJobData = async () => {
+			try {
+				console.log('Fetching job data for ID:', jobId);
+				const job = await fetchJob(jobId);
+				console.log('Job data received:', job);
+				setJobData(job.processed_job);
+			} catch (err) {
+				console.error('Failed to load job preview:', err);
+				setFlash({ type: 'error', message: 'Could not load job preview.' });
+			}
+		};
+
+		loadJobData();
+	}, [jobId]);
 
 	const handleChange = useCallback(
 		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -155,18 +176,20 @@ export default function JobDescriptionUploadTextArea() {
 		text.trim() === '' || submissionStatus === 'submitting' || !resumeId || !resumeReady;
 
 	return (
-		<form onSubmit={handleUpload} className="p-4 mx-auto w-full max-w-xl">
-			{resumeReady && !resumeId && (
-				<div className="p-3 mb-4 text-sm rounded-md bg-red-900/20 border border-red-800/40 text-red-300">
-					<p>No resume is currently stored. Please upload a resume first.</p>
-					<button
-						type="button"
-						onClick={handleSwitchResume}
-						className="mt-2 inline-flex items-center gap-1 text-red-200 underline hover:text-red-100"
-					>
-						Upload resume
-					</button>
-				</div>
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+			{/* Left Column: Input */}
+			<form onSubmit={handleUpload} className="p-4 w-full">
+				{resumeReady && !resumeId && (
+					<div className="p-3 mb-4 text-sm rounded-md bg-red-900/20 border border-red-800/40 text-red-300">
+						<p>No resume is currently stored. Please upload a resume first.</p>
+						<button
+							type="button"
+							onClick={handleSwitchResume}
+							className="mt-2 inline-flex items-center gap-1 text-red-200 underline hover:text-red-100"
+						>
+							Upload resume
+						</button>
+					</div>
 			)}
 			{flash && (
 				<div
@@ -278,5 +301,11 @@ export default function JobDescriptionUploadTextArea() {
 				</div>
 			)}
 		</form>
+
+		{/* Right Column: Job Preview */}
+		<div className="p-4 w-full">
+			<JobPreview jobData={jobData} />
+		</div>
+	</div>
 	);
 }

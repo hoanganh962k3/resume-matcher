@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { DotPattern } from '@/components/common/dot-pattern-glow';
 import { cn } from '@/lib/utils';
 
 /**
@@ -35,28 +34,19 @@ const BackgroundContainer = ({
 	return (
 		<section
 			className={cn(
-				'relative flex h-screen items-center justify-center overflow-hidden p-2 bg-gradient-to-br from-pink-600 via-orange-400 to-purple-700',
+				'relative flex min-h-screen items-center justify-center overflow-auto p-2 bg-zinc-950',
 				className,
 			)}
 		>
 			{/* Inner container with dark background, padding, and rounded corners */}
 			<div
 				className={cn(
-					'relative z-10 flex h-full w-full flex-col items-center justify-center bg-zinc-950 p-8 rounded-2xl',
+					'relative z-10 flex w-full flex-col items-center justify-center bg-zinc-900 p-8 rounded-2xl overflow-auto',
 					innerClassName, // Allow overriding or extending inner div styles
 				)}
 			>
-				{/* Dot pattern component for visual effect */}
-				<DotPattern
-					cr={2} // Circle radius for dots
-					glow={true} // Enable glow effect
-					className={cn(
-						'absolute inset-0 -z-10 text-violet-400 [mask-image:radial-gradient(400px_circle_at_center,white,transparent)]',
-						dotClassName,
-					)}
-				/>
-				{/* Render children content above the dot pattern */}
-				<div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+				{/* Render children content */}
+				<div className="relative z-10 w-full flex flex-col items-center justify-center">
 					{children}
 				</div>
 			</div>
