@@ -5,22 +5,24 @@ import { Suspense } from 'react';
 
 const ProvideJobDescriptionsPage = () => {
 	return (
-		<BackgroundContainer innerClassName="items-stretch justify-start py-8 overflow-y-auto">
-			<div className="flex w-full max-w-7xl flex-col gap-8 mx-auto px-4 pb-8">
+		<BackgroundContainer innerClassName="items-stretch justify-start py-16 overflow-auto">
+			<div className="flex w-full max-w-7xl flex-col gap-10 mx-auto">
 				<div className="self-end">
 					<ApiKeyMenu />
 				</div>
-				<div className="flex flex-col items-center text-center gap-4">
-					<h1 className="text-4xl font-bold text-white">
+				<div className="flex flex-col items-center text-center gap-6">
+					<h1 className="text-5xl sm:text-6xl font-bold text-white">
 						Provide Job Description
 					</h1>
-					<p className="text-gray-300 text-lg max-w-2xl">
-						Paste your job description below. We'll analyze it and show you how well your resume matches.
+					<p className="text-gray-300 text-lg sm:text-xl max-w-2xl">
+						Paste your job description below. We&apos;ll compare it against your résumé and surface the best match.
 					</p>
 				</div>
-				<Suspense fallback={<div className="text-gray-300 text-center">Loading...</div>}>
-					<JobDescriptionUploadTextArea />
-				</Suspense>
+				<div className="flex justify-center">
+					<Suspense fallback={<div className="text-gray-300">Loading input...</div>}>
+						<JobDescriptionUploadTextArea />
+					</Suspense>
+				</div>
 			</div>
 		</BackgroundContainer>
 	);

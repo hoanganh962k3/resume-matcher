@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ResumePreviewProps {
 	resumeData: any;
 }
 
 export default function ResumePreview({ resumeData }: ResumePreviewProps) {
+	const [expandedExperience, setExpandedExperience] = useState<Record<number, boolean>>({});
+	const [showAllSkills, setShowAllSkills] = useState(false);
+	
 	if (!resumeData) {
 		return (
 			<div className="bg-gray-800/50 p-6 rounded-lg border border-gray-600">

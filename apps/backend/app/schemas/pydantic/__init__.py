@@ -5,6 +5,11 @@ from .resume_analysis import ResumeAnalysisModel
 from .structured_resume import StructuredResumeModel
 from .resume_improvement import ResumeImprovementRequest
 from .config import LLMApiKeyResponse, LLMApiKeyUpdate
+from .learning_schedule import (
+    LearningScheduleModel,
+    LearningScheduleRequest,
+    ScheduleType,
+)
 
 __all__ = [
     "JobUploadRequest",
@@ -15,4 +20,7 @@ __all__ = [
     "ResumeAnalysisModel",
     "LLMApiKeyResponse",
     "LLMApiKeyUpdate",
+    "LearningScheduleModel",
+    "LearningScheduleRequest",
+    "ScheduleType",
 ]

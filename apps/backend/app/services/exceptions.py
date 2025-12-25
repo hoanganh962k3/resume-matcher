@@ -108,3 +108,14 @@ class JobKeywordExtractionError(Exception):
             message = "Job keyword extraction failed. Cannot improve resume without job requirements."
         super().__init__(message)
         self.job_id = job_id
+
+
+class LearningScheduleGenerationError(Exception):
+    """
+    Exception raised when learning schedule generation fails.
+    """
+
+    def __init__(self, message: Optional[str] = None):
+        if not message:
+            message = "Failed to generate learning schedule."
+        super().__init__(message)
