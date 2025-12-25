@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Building2, MapPin, Calendar, Briefcase, Tag } from 'lucide-react';
 
 interface JobPreviewProps {
@@ -16,6 +16,10 @@ interface JobPreviewProps {
 }
 
 export default function JobPreview({ jobData }: JobPreviewProps) {
+	const [showAllResponsibilities, setShowAllResponsibilities] = useState(false);
+	const [showAllQualifications, setShowAllQualifications] = useState(false);
+	const [showAllKeywords, setShowAllKeywords] = useState(false);
+	
 	if (!jobData) {
 		return (
 			<div className="bg-gray-800/50 p-6 rounded-lg border border-gray-600">
@@ -95,11 +99,18 @@ export default function JobPreview({ jobData }: JobPreviewProps) {
 					<div>
 						<h3 className="text-lg font-semibold text-white mb-2">Key Responsibilities</h3>
 						<ul className="list-disc list-inside space-y-1 text-gray-300 text-sm">
-							{responsibilities.slice(0, 5).map((resp: string, idx: number) => (
-								<li key={idx}>{resp}</li>
-							))}
-							{responsibilities.length > 5 && (
-								<li className="text-gray-400">+{responsibilities.length - 5} more...</li>
+						{(showAllResponsibilities ? responsibilities : responsibilities.slice(0, 5)).map((resp: string, idx: number) => (
+							<li key={idx}>{resp}</li>
+						))}
+						{responsibilities.length > 5 && (
+							<li>
+								<button
+									onClick={() => setShowAllResponsibilities(!showAllResponsibilities)}
+									className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
+								>
+									{showAllResponsibilities ? 'Show less' : `+${responsibilities.length - 5} more...`}
+								</button>
+							</li>
 							)}
 						</ul>
 					</div>
@@ -110,11 +121,18 @@ export default function JobPreview({ jobData }: JobPreviewProps) {
 					<div>
 						<h3 className="text-lg font-semibold text-white mb-2">Qualifications</h3>
 						<ul className="list-disc list-inside space-y-1 text-gray-300 text-sm">
-							{quals.slice(0, 5).map((qual: string, idx: number) => (
-								<li key={idx}>{qual}</li>
-							))}
-							{quals.length > 5 && (
-								<li className="text-gray-400">+{quals.length - 5} more...</li>
+						{(showAllQualifications ? quals : quals.slice(0, 5)).map((qual: string, idx: number) => (
+							<li key={idx}>{qual}</li>
+						))}
+						{quals.length > 5 && (
+							<li>
+								<button
+									onClick={() => setShowAllQualifications(!showAllQualifications)}
+									className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
+								>
+									{showAllQualifications ? 'Show less' : `+${quals.length - 5} more...`}
+								</button>
+							</li>
 							)}
 						</ul>
 					</div>
@@ -128,7 +146,7 @@ export default function JobPreview({ jobData }: JobPreviewProps) {
 							Key Skills & Technologies
 						</h3>
 						<div className="flex flex-wrap gap-2">
-							{keywords.slice(0, 15).map((keyword: string, idx: number) => (
+							{(showAllKeywords ? keywords : keywords.slice(0, 15)).map((keyword: string, idx: number) => (
 								<span
 									key={idx}
 									className="px-3 py-1 bg-blue-600/20 border border-blue-500/40 rounded-full text-blue-300 text-xs"
@@ -137,9 +155,12 @@ export default function JobPreview({ jobData }: JobPreviewProps) {
 								</span>
 							))}
 							{keywords.length > 15 && (
-								<span className="px-3 py-1 text-gray-400 text-xs">
-									+{keywords.length - 15} more
-								</span>
+								<button
+									onClick={() => setShowAllKeywords(!showAllKeywords)}
+									className="px-3 py-1 text-blue-400 hover:text-blue-300 text-xs underline cursor-pointer"
+								>
+									{showAllKeywords ? 'Show less' : `+${keywords.length - 15} more`}
+								</button>
 							)}
 						</div>
 					</div>

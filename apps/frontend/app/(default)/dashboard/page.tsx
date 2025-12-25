@@ -3,13 +3,14 @@
 
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import BackgroundContainer from '@/components/common/background-container';
 import InsightsPanel from '@/components/dashboard/job-listings';
 import ResumeAnalysis from '@/components/dashboard/resume-analysis';
 import Resume from '@/components/dashboard/resume-component'; // rename import to match default export
 import { useResumePreview } from '@/components/common/resume_previewer_context';
-import { ChevronLeft, ChevronRight, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, XCircle, AlertTriangle, Info, Calendar } from 'lucide-react';
 
 const mockResumeData = {
 	personalInfo: {
@@ -70,33 +71,42 @@ const mockResumeData = {
 };
 
 export default function DashboardPage() {
-	const { improvedData } = useResumePreview();
-	if (!improvedData) {
-		return (
-			<BackgroundContainer className="min-h-screen" innerClassName="bg-zinc-950">
-				<div className="flex items-center justify-center h-full p-6 text-gray-400">
-					No improved resume found. Please click “Improve” on the Job Upload page first.
-				</div>
-			</BackgroundContainer>
-		);
-	}
+	const router = useRouter();
+	const { improvedData, setImprovedData } = useResumePreview();
+	const [viewMode, setViewMode] = useState<'ats' | 'resume'>('ats');
 
-	const { data } = improvedData;
-    const { resume_preview, new_score, original_score } = data;
-    const preview = resume_preview ?? mockResumeData;
-    const newPct = Math.round(new_score * 100);
-    const originalPct = Math.round((original_score ?? 0) * 100);
-    const [viewMode, setViewMode] = useState<'ats' | 'resume'>('ats');
+	// Check for job analysis from compare page (using sessionStorage - clears on app close)
+	useEffect(() => {
+		if (improvedData) return; // Already have data from context
+
+		try {
+			const stored = sessionStorage.getItem('resumeMatcher:selectedJobAnalysis');
+			if (stored) {
+				const parsed = JSON.parse(stored);
+				setImprovedData({ data: parsed.data });
+			}
+		} catch (err) {
+			console.warn('Failed to load selected job analysis:', err);
+		}
+	}, [improvedData, setImprovedData]);
+
+	// Compute all values that depend on data (even if data is null)
+	const data = improvedData?.data;
+	const { resume_preview, new_score, original_score, resume_id, job_id } = data || {};
+	const preview = resume_preview ?? mockResumeData;
+	const newPct = Math.round((new_score ?? 0) * 100);
+	const originalPct = Math.round((original_score ?? 0) * 100);
 
 	const skillComparison = useMemo(() => {
-		const stats = (data.skill_comparison ?? []).filter((item) => (item.job_mentions ?? 0) > 0);
+		if (!data) return [];
+		const stats = (data?.skill_comparison ?? []).filter((item) => (item.job_mentions ?? 0) > 0);
 		return [...stats].sort((a, b) => {
 			if (b.job_mentions !== a.job_mentions) return b.job_mentions - a.job_mentions;
 			return b.resume_mentions - a.resume_mentions;
 		});
-	}, [data.skill_comparison]);
+	}, [data]);
 
-	const personalInfo = preview.personalInfo;
+	const personalInfo = preview?.personalInfo;
 	const contactChecks = useMemo(
 		() => [
 			{ label: 'Address', ok: Boolean(personalInfo?.location) },
@@ -116,7 +126,7 @@ export default function DashboardPage() {
 		[preview.education, preview.workExperience, preview.personalProjects]
 	);
 
-	const jobDescriptionText = data.job_description ?? '';
+	const jobDescriptionText = data?.job_description ?? '';
 	const jobTitleGuess = useMemo(() => {
 		if (!jobDescriptionText) return '';
 		const firstLine = jobDescriptionText
@@ -133,7 +143,7 @@ export default function DashboardPage() {
 				message: 'Could not detect a job title in the job description. Include it in your summary to improve searchability.',
 			};
 		}
-		const updatedResume = (data.updated_resume_markdown ?? '').toLowerCase();
+		const updatedResume = (data?.updated_resume_markdown ?? '').toLowerCase();
 		const hasTitle = updatedResume.includes(jobTitleGuess);
 		return hasTitle
 			? {
@@ -144,7 +154,7 @@ export default function DashboardPage() {
 				status: 'fail' as const,
 				message: `Add the job title or a close match ("${jobTitleGuess.slice(0, 60)}...") to your summary or most relevant role so recruiters can find you by title.`,
 			};
-	}, [data.updated_resume_markdown, jobTitleGuess]);
+	}, [data?.updated_resume_markdown, jobTitleGuess]);
 
 	const getStatusIcon = (status: 'pass' | 'fail' | 'warning' | 'info') => {
 		const base = 'h-4 w-4';
@@ -159,6 +169,17 @@ export default function DashboardPage() {
 				return <Info className={`${base} text-blue-300`} />;
 		}
 	};
+
+	// Now check if we have data - all hooks must be called first
+	if (!improvedData) {
+		return (
+			<BackgroundContainer className="min-h-screen" innerClassName="bg-zinc-950">
+				<div className="flex items-center justify-center h-full p-6 text-gray-400">
+					No improved resume found. Please click "Improve" on the Job Upload page first.
+				</div>
+			</BackgroundContainer>
+		);
+	}
 
 	return (
 		<BackgroundContainer className="min-h-screen" innerClassName="bg-zinc-950 backdrop-blur-sm overflow-auto">
@@ -203,10 +224,13 @@ export default function DashboardPage() {
 									improvements={improvedData.data.improvements ?? []}
 								/>
 							</section>
+					
 							<section>
 								<InsightsPanel
 									details={improvedData.data.details}
 									commentary={improvedData.data.commentary}
+									resumeId={resume_id}
+									jobId={job_id}
 								/>
 							</section>
 						</div>
@@ -336,61 +360,62 @@ export default function DashboardPage() {
 													</div>
 												</div>
 											</div>
-										<section>
-											<h4 className="text-lg font-semibold text-purple-300 mb-3">Skill Comparison</h4>
-											{skillComparison.length > 0 ? (
-												<div className="overflow-auto border border-gray-800 rounded-md">
-													<table className="min-w-full text-sm text-gray-200">
-														<thead className="bg-gray-900/80 text-gray-300 uppercase text-xs">
-															<tr>
-																<th className="px-4 py-2 text-left">Skill</th>
-																<th className="px-4 py-2 text-right">New Résumé</th>
-																<th className="px-4 py-2 text-right">Job Description</th>
-															</tr>
-														</thead>
-														<tbody>
-															{skillComparison.map((entry) => (
-																<tr key={entry.skill} className="border-t border-gray-800">
-																	<td className="px-4 py-2 text-gray-100">{entry.skill}</td>
-																	<td className="px-4 py-2 text-right text-gray-300">
-																		{entry.resume_mentions > 0 ? (
-																			<span>{entry.resume_mentions}</span>
-																		) : (
-																			<span className="inline-flex items-center justify-end gap-1 text-red-400">
-																			<XCircle className="h-4 w-4" />
-																			0
-																		</span>
-																		)}
-																	</td>
-																	<td className="px-4 py-2 text-right text-gray-300">
-																		{entry.job_mentions > 0 ? (
-																			<span>{entry.job_mentions}</span>
-																		) : (
-																			<span className="inline-flex items-center justify-end gap-1 text-red-400">
-																			<XCircle className="h-4 w-4" />
-																			0
-																		</span>
-																		)}
-																	</td>
+
+											<section>
+												<h4 className="text-lg font-semibold text-purple-300 mb-3">Skill Comparison</h4>
+												{skillComparison.length > 0 ? (
+													<div className="overflow-auto border border-gray-800 rounded-md">
+														<table className="min-w-full text-sm text-gray-200">
+															<thead className="bg-gray-900/80 text-gray-300 uppercase text-xs">
+																<tr>
+																	<th className="px-4 py-2 text-left">Skill</th>
+																	<th className="px-4 py-2 text-right">New Résumé</th>
+																	<th className="px-4 py-2 text-right">Job Description</th>
 																</tr>
-															))}
-														</tbody>
-													</table>
-												</div>
-											) : (
-												<p className="text-sm text-gray-400">
-													No job keywords were detected for comparison.
-												</p>
-											)}
-										</section>
-									</div>
-							)}
+															</thead>
+															<tbody>
+																{skillComparison.map((entry) => (
+																	<tr key={entry.skill} className="border-t border-gray-800">
+																		<td className="px-4 py-2 text-gray-100">{entry.skill}</td>
+																		<td className="px-4 py-2 text-right text-gray-300">
+																			{entry.resume_mentions > 0 ? (
+																				<span>{entry.resume_mentions}</span>
+																			) : (
+																				<span className="inline-flex items-center justify-end gap-1 text-red-400">
+																				<XCircle className="h-4 w-4" />
+																				0
+																			</span>
+																			)}
+																		</td>
+																		<td className="px-4 py-2 text-right text-gray-300">
+																			{entry.job_mentions > 0 ? (
+																				<span>{entry.job_mentions}</span>
+																			) : (
+																				<span className="inline-flex items-center justify-end gap-1 text-red-400">
+																				<XCircle className="h-4 w-4" />
+																				0
+																			</span>
+																			)}
+																		</td>
+																	</tr>
+																))}
+															</tbody>
+														</table>
+													</div>
+												) : (
+													<p className="text-sm text-gray-400">
+														No job keywords were detected for comparison.
+													</p>
+												)}
+											</section>
+										</div>
+									)}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</BackgroundContainer>
+		</BackgroundContainer>
 	);
 }

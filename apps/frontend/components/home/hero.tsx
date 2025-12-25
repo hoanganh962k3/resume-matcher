@@ -1,8 +1,23 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import BackgroundContainer from '@/components/common/background-container';
 
 export default function Hero() {
+	// Clear all stored data when landing on home page
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			try {
+				localStorage.clear();
+				sessionStorage.clear();
+				console.log('All storage cleared - starting fresh');
+			} catch (err) {
+				console.warn('Failed to clear storage:', err);
+			}
+		}
+	}, []);
+
 	return (
 		<BackgroundContainer>
 			<div className="relative mb-4 h-[30vh] w-full ">
