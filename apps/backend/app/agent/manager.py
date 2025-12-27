@@ -34,11 +34,6 @@ class AgentManager:
                 return OpenAIProvider(model_name=self.model,
                                       api_key=api_key,
                                       opts=opts)
-            case 'ollama':
-                from .providers.ollama import OllamaProvider
-                model = opts.get("model", self.model)
-                return OllamaProvider(model_name=model,
-                                      opts=opts)
             case _:
                 from .providers.llama_index import LlamaIndexProvider
                 llm_api_key = opts.get("llm_api_key", settings.LLM_API_KEY)
@@ -71,10 +66,6 @@ class EmbeddingManager:
                 from .providers.openai import OpenAIEmbeddingProvider
                 api_key = kwargs.get("openai_api_key", settings.EMBEDDING_API_KEY)
                 return OpenAIEmbeddingProvider(api_key=api_key, embedding_model=self._model)
-            case 'ollama':
-                from .providers.ollama import OllamaEmbeddingProvider
-                model = kwargs.get("embedding_model", self._model)
-                return OllamaEmbeddingProvider(embedding_model=model)
             case _:
                 from .providers.llama_index import LlamaIndexEmbeddingProvider
                 embed_api_key = kwargs.get("embedding_api_key", settings.EMBEDDING_API_KEY)
