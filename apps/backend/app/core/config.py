@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "resume-matcher-jwt-secret-dev-key-change-in-production"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
-    # Default to OpenAI so the project does not require running a local Ollama server.
+    # Default to OpenAI for LLM provider
     LLM_PROVIDER: Optional[str] = "openai"
     LLM_API_KEY: Optional[str] = None
     LLM_BASE_URL: Optional[str] = None
