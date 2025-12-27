@@ -9,6 +9,11 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 logger = logging.getLogger(__name__)
 
 
+class ResumeMatcherException(Exception):
+    """Base exception for Resume Matcher operations"""
+    pass
+
+
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
     request_id = getattr(request.state, "request_id", "")
     return JSONResponse(

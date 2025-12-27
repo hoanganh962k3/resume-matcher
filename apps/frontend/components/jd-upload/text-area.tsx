@@ -51,6 +51,7 @@ export default function JobDescriptionUploadTextArea() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.length > 0) {
+          // Restore jobs with all data including jobData
           setJobs(parsed);
         }
       }
@@ -59,9 +60,10 @@ export default function JobDescriptionUploadTextArea() {
     }
   }, []);
 
-  // Save jobs to localStorage whenever they change
+  // Save jobs to localStorage whenever they change (including jobData)
   useEffect(() => {
     try {
+      // Save complete job data including jobData to localStorage
       localStorage.setItem('resumeMatcher:savedJobs', JSON.stringify(jobs));
     } catch (error) {
       console.warn('Unable to save jobs to localStorage', error);
@@ -93,9 +95,10 @@ export default function JobDescriptionUploadTextArea() {
     setResumeReady(true);
   }, [resumeIdFromQuery]);
 
-  // Fetch job data when any job's jobId changes
+  // Fetch job data when any job's jobId changes and jobData is missing
   useEffect(() => {
     jobs.forEach((job, index) => {
+      // Only fetch if jobId exists but jobData is missing
       if (job.jobId && !job.jobData) {
         const loadJobData = async () => {
           try {

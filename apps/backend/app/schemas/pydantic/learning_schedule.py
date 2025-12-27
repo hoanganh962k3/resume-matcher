@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from enum import Enum
 
@@ -99,8 +99,7 @@ class LearningScheduleModel(BaseModel):
     recommendations: RecommendationsModel = Field(..., description="Additional recommendations")
     progressTracking: ProgressTrackingModel = Field(..., description="Progress tracking guidelines")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "scheduleType": "weekly",
                 "totalDurationWeeks": 8,
@@ -144,6 +143,7 @@ class LearningScheduleModel(BaseModel):
                 }
             }
         }
+    )
 
 
 class LearningScheduleRequest(BaseModel):
@@ -160,8 +160,7 @@ class LearningScheduleRequest(BaseModel):
         le=52
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "resumeId": "550e8400-e29b-41d4-a716-446655440000",
                 "jobId": "660e8400-e29b-41d4-a716-446655440001",
@@ -169,3 +168,4 @@ class LearningScheduleRequest(BaseModel):
                 "durationWeeks": 8
             }
         }
+    )

@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime, text
 
 from .base import Base
 from .association import job_resume_association
+from .user import UUID
 
 
 class ProcessedJob(Base):
@@ -33,25 +34,17 @@ class ProcessedJob(Base):
         index=True,
     )
 
-    # one-to-many relation between user and jobs
-    # owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    # owner = relationship("User", back_populates="processed_jobs")
+    user_id = Column(UUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    owner = relationship("User", back_populates="processed_jobs")
     raw_job = relationship("Job", back_populates="raw_job_association")
-
-    # many-to-many relationship in job and resume
-    processed_resumes = relationship(
-        "ProcessedResume",
-        secondary=job_resume_association,
-        back_populates="processed_jobs",
-    )
 
 
 class Job(Base):
     __tablename__ = "jobs"
 
     id = Column(Integer, primary_key=True, index=True)
-    job_id = Column(String, unique=True, nullable=False)
-    resume_id = Column(String, ForeignKey("resumes.resume_id"), nullable=False)
+    job_id = Column(String, unique=True, nullable=False, index=True)
+    user_id = Column(UUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     content = Column(Text, nullable=False)
     created_at = Column(
         DateTime(timezone=True),
@@ -64,4 +57,9 @@ class Job(Base):
         "ProcessedJob", back_populates="raw_job", uselist=False
     )
 
-    resumes = relationship("Resume", back_populates="jobs")
+    # Many-to-many relationship with resumes through association table
+    resumes = relationship(
+        "Resume",
+        secondary=job_resume_association,
+        back_populates="jobs"
+    )

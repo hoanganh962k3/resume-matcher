@@ -6,15 +6,15 @@ job_resume_association = Table(
     "job_resume",
     Base.metadata,
     Column(
-        "processed_job_id",
+        "job_id",
         String,
-        ForeignKey("processed_jobs.job_id"),
+        ForeignKey("jobs.job_id", ondelete="CASCADE"),
         primary_key=True,
     ),
     Column(
-        "processed_resume_id",
+        "resume_id",
         String,
-        ForeignKey("processed_resumes.resume_id"),
+        ForeignKey("resumes.resume_id", ondelete="CASCADE"),
         primary_key=True,
     ),
 )

@@ -9,6 +9,7 @@ import {
   type DragEvent,
   type InputHTMLAttributes,
 } from 'react';
+import { getAuthToken } from '@/lib/api/auth';
 
 export type FileMetadata = {
   name: string;
@@ -208,8 +209,16 @@ export const useFileUpload = (
     setState((prev) => ({ ...prev, isUploadingGlobal: true, errors: [] }));
 
     try {
+      // Get authentication token and add to headers if available
+      const token = getAuthToken();
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(uploadUrl, {
         method: 'POST',
+        headers,
         body: formData,
       });
 

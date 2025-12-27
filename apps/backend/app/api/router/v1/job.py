@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, Depends, Request, status, Query
 from fastapi.responses import JSONResponse
 
 from app.core import get_db_session
+from app.core.auth_dependencies import get_current_user_optional, get_current_user_required
+from app.models.user import User
 from app.services import JobService, JobNotFoundError
 from app.schemas.pydantic.job import JobUploadRequest
 
@@ -22,6 +24,7 @@ async def upload_job(
     payload: JobUploadRequest,
     request: Request,
     db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user_optional),
 ):
     """
     Accepts a job description as a MarkDown text and stores it in the database.
@@ -47,7 +50,9 @@ async def upload_job(
 
     try:
         job_service = JobService(db)
-        job_ids = await job_service.create_and_store_job(payload.model_dump())
+        # Get user_id if user is authenticated, None for guest uploads
+        user_id = str(current_user.id) if current_user else None
+        job_ids = await job_service.create_and_store_job(payload.model_dump(), user_id=user_id)
 
     except AssertionError as e:
         raise HTTPException(
@@ -131,4 +136,49 @@ async def get_job(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching job data",
+        )
+
+
+@job_router.get(
+    "/resume/{resume_id}",
+    summary="Get all jobs associated with a specific resume",
+)
+async def get_jobs_for_resume(
+    resume_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user_required),
+):
+    """
+    Retrieves all jobs with their processed data associated with a specific resume.
+
+    Args:
+        resume_id: The ID of the resume to fetch jobs for
+
+    Returns:
+        List of jobs with both raw and processed data
+
+    Raises:
+        HTTPException: If user is not authenticated or if there's an error fetching data.
+    """
+    request_id = getattr(request.state, "request_id", str(uuid4()))
+    headers = {"X-Request-ID": request_id}
+
+    try:
+        job_service = JobService(db)
+        jobs = await job_service.get_jobs_for_resume(resume_id=resume_id, user_id=str(current_user.id))
+
+        return JSONResponse(
+            content={
+                "request_id": request_id,
+                "data": jobs,
+            },
+            headers=headers,
+        )
+    
+    except Exception as e:
+        logger.error(f"Error fetching jobs for resume: {str(e)} - traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching jobs for resume",
         )

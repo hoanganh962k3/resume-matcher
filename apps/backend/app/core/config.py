@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str = f"sqlite:///{_DEFAULT_DB_PATH}"
     ASYNC_DATABASE_URL: str = f"sqlite+aiosqlite:///{_DEFAULT_DB_PATH}"
     SESSION_SECRET_KEY: str = "resume-matcher-dev"
+    # JWT Authentication settings
+    JWT_SECRET_KEY: str = "resume-matcher-jwt-secret-dev-key-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     # Default to OpenAI so the project does not require running a local Ollama server.
     LLM_PROVIDER: Optional[str] = "openai"
     LLM_API_KEY: Optional[str] = None

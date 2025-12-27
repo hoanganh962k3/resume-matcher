@@ -46,16 +46,31 @@ class RemoteStatusEnum(str, enum.Enum):
 
     @classmethod
     def _missing_(cls, value: object):
-        """Handles case-insensitive lookup."""
+        """Handles case-insensitive lookup and common variations."""
         if isinstance(value, str):
             # Handle the case where the AI returns "string" as a literal value
             if value.lower() == "string":
                 return cls.NOT_SPECIFIED
             
-            value_lower = value.lower()
+            value_lower = value.lower().strip()
+            
+            # Direct mapping (case-insensitive)
             mapping = {member.value.lower(): member for member in cls}
             if value_lower in mapping:
                 return mapping[value_lower]
+            
+            # Handle common variations and location-specific remote work
+            # e.g., "Remote (US & Canada)", "Remote - USA", "Fully Remote (Global)"
+            if "fully remote" in value_lower or value_lower.startswith("fully remote"):
+                return cls.FULLY_REMOTE
+            elif "hybrid" in value_lower:
+                return cls.HYBRID
+            elif "on-site" in value_lower or "onsite" in value_lower or "on site" in value_lower:
+                return cls.ON_SITE
+            elif "remote" in value_lower:  # Catch any remaining remote variations
+                return cls.REMOTE
+            elif "multiple" in value_lower and "location" in value_lower:
+                return cls.MULTIPLE_LOCATIONS
 
         raise ValueError(
             "remote_status must be one of: Fully Remote, Hybrid, On-site, Remote, Not Specified, Multiple Locations (case insensitive)"

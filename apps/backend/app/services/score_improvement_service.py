@@ -16,6 +16,7 @@ from app.schemas.json import json_schema_factory
 from app.schemas.pydantic import ResumePreviewerModel, ResumeAnalysisModel
 from app.agent import EmbeddingManager, AgentManager
 from app.models import Resume, Job, ProcessedResume, ProcessedJob
+from .job_service import JobService
 from .exceptions import (
     ResumeNotFoundError,
     JobNotFoundError,
@@ -353,6 +354,9 @@ class ScoreImprovementService:
         """
         Main method to run the scoring and improving process and return dict.
         """
+        # Ensure job-resume association exists for this comparison
+        job_service = JobService(self.db)
+        await job_service.ensure_job_resume_association(job_id, resume_id)
 
         resume, processed_resume = await self._get_resume(resume_id)
         job, processed_job = await self._get_job(job_id)
@@ -453,6 +457,9 @@ class ScoreImprovementService:
         """
         Main method to run the scoring and improving process and return dict.
         """
+        # Ensure job-resume association exists for this comparison
+        job_service = JobService(self.db)
+        await job_service.ensure_job_resume_association(job_id, resume_id)
 
         yield f"data: {json.dumps({'status': 'starting', 'message': 'Analyzing resume and job description...'})}\n\n"
         await asyncio.sleep(2)
