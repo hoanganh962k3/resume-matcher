@@ -35,14 +35,7 @@ class AgentManager:
                                       api_key=api_key,
                                       opts=opts)
             case _:
-                from .providers.llama_index import LlamaIndexProvider
-                llm_api_key = opts.get("llm_api_key", settings.LLM_API_KEY)
-                llm_api_base_url = opts.get("llm_base_url", settings.LLM_BASE_URL)
-                return LlamaIndexProvider(api_key=llm_api_key,
-                                          model_name=self.model,
-                                          api_base_url=llm_api_base_url,
-                                          provider=self.model_provider,
-                                          opts=opts)
+                raise ValueError(f"Unsupported LLM provider: {self.model_provider}. Only 'openai' is supported.")
 
     async def run(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         """
@@ -67,11 +60,7 @@ class EmbeddingManager:
                 api_key = kwargs.get("openai_api_key", settings.EMBEDDING_API_KEY)
                 return OpenAIEmbeddingProvider(api_key=api_key, embedding_model=self._model)
             case _:
-                from .providers.llama_index import LlamaIndexEmbeddingProvider
-                embed_api_key = kwargs.get("embedding_api_key", settings.EMBEDDING_API_KEY)
-                return LlamaIndexEmbeddingProvider(api_key=embed_api_key,
-                                                   provider=self._model_provider,
-                                                   embedding_model=self._model)
+                raise ValueError(f"Unsupported embedding provider: {self._model_provider}. Only 'openai' is supported.")
 
     async def embed(self, text: str, **kwargs: Any) -> list[float]:
         """
