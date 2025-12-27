@@ -204,9 +204,9 @@ export default function DashboardPage() {
   return (
     <BackgroundContainer
       className="min-h-screen"
-      innerClassName="bg-zinc-950 backdrop-blur-sm overflow-auto"
+      innerClassName="bg-zinc-950 backdrop-blur-sm"
     >
-      <div className="w-full h-full overflow-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="w-full py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="container mx-auto">
           <Button
