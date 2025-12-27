@@ -9,6 +9,7 @@ import InsightsPanel from '@/components/dashboard/job-listings';
 import ResumeAnalysis from '@/components/dashboard/resume-analysis';
 import Resume from '@/components/dashboard/resume-component'; // rename import to match default export
 import { useResumePreview } from '@/components/common/resume_previewer_context';
+import { Button } from '@/components/ui/button';
 import {
   ChevronLeft,
   ChevronRight,
@@ -17,6 +18,7 @@ import {
   AlertTriangle,
   Info,
   Calendar,
+  ArrowLeft,
 } from 'lucide-react';
 
 const mockResumeData = {
@@ -207,6 +209,14 @@ export default function DashboardPage() {
       <div className="w-full h-full overflow-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="container mx-auto">
+          <Button
+            onClick={() => router.back()}
+            variant="ghost"
+            className="mb-4 text-gray-400 hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
           <header className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-semibold pb-2 text-white">
@@ -223,11 +233,11 @@ export default function DashboardPage() {
             <div>
               <button
                 onClick={() => {
-                  window.location.href = '/jobs';
+                  router.back();
                 }}
                 className="inline-flex items-center justify-center rounded-md border border-purple-500/60 bg-purple-600/20 px-4 py-2 text-sm font-medium text-purple-100 hover:bg-purple-600/40 hover:text-white transition-colors"
               >
-                Redo analysis
+                Back to Jobs
               </button>
             </div>
           </header>

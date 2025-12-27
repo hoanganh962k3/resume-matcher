@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime, text
 
 from .base import Base
 from .association import job_resume_association
+from .user import UUID
 
 
 class ProcessedResume(Base):
@@ -30,15 +31,9 @@ class ProcessedResume(Base):
         index=True,
     )
 
-    # owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    # owner = relationship("User", back_populates="processed_resumes")
+    user_id = Column(UUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    owner = relationship("User", back_populates="processed_resumes")
     raw_resume = relationship("Resume", back_populates="raw_resume_association")
-
-    processed_jobs = relationship(
-        "ProcessedJob",
-        secondary=job_resume_association,
-        back_populates="processed_resumes",
-    )
 
 
 class Resume(Base):
@@ -46,6 +41,7 @@ class Resume(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     resume_id = Column(String, unique=True, nullable=False)
+    user_id = Column(UUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     content = Column(Text, nullable=False)
     content_type = Column(String, nullable=False)
     created_at = Column(
@@ -59,4 +55,9 @@ class Resume(Base):
         "ProcessedResume", back_populates="raw_resume", uselist=False
     )
 
-    jobs = relationship("Job", back_populates="resumes")
+    # Many-to-many relationship with jobs through association table
+    jobs = relationship(
+        "Job",
+        secondary=job_resume_association,
+        back_populates="resumes"
+    )

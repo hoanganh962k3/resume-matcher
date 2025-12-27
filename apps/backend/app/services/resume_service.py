@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from pydantic import ValidationError
 from typing import Dict, Optional
+from sqlalchemy import select, and_
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Resume, ProcessedResume
 from app.agent import AgentManager
@@ -52,7 +54,7 @@ class ResumeService:
 
 
     async def convert_and_store_resume(
-        self, file_bytes: bytes, file_type: str, filename: str, content_type: str = "md"
+        self, file_bytes: bytes, file_type: str, filename: str, content_type: str = "md", user_id: Optional[str] = None
     ):
         """
         Converts resume file (PDF/DOCX) to text using MarkItDown and stores it in the database.
@@ -62,9 +64,10 @@ class ResumeService:
             file_type: MIME type of the file ("application/pdf" or "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
             filename: Original filename
             content_type: Output format ("md" for markdown or "html")
+            user_id: Optional user ID to link the resume to a user (None for guest uploads)
 
         Returns:
-            None
+            resume_id: The ID of the stored resume
         """
         with tempfile.NamedTemporaryFile(
             delete=False, suffix=self._get_file_extension(file_type)
@@ -92,10 +95,10 @@ class ResumeService:
                 else:
                     raise Exception(f"File conversion failed: {error_msg}") from e
             
-            resume_id = await self._store_resume_in_db(text_content, content_type)
+            resume_id = await self._store_resume_in_db(text_content, content_type, user_id)
 
             await self._extract_and_store_structured_resume(
-                resume_id=resume_id, resume_text=text_content
+                resume_id=resume_id, resume_text=text_content, user_id=user_id
             )
 
             return resume_id
@@ -114,13 +117,16 @@ class ResumeService:
             return ".docx"
         return ""
 
-    async def _store_resume_in_db(self, text_content: str, content_type: str):
+    async def _store_resume_in_db(self, text_content: str, content_type: str, user_id: Optional[str] = None):
         """
         Stores the parsed resume content in the database.
         """
         resume_id = str(uuid.uuid4())
         resume = Resume(
-            resume_id=resume_id, content=text_content, content_type=content_type
+            resume_id=resume_id,
+            user_id=user_id,
+            content=text_content,
+            content_type=content_type
         )
 
         self.db.add(resume)
@@ -130,7 +136,7 @@ class ResumeService:
         return resume_id
 
     async def _extract_and_store_structured_resume(
-        self, resume_id, resume_text: str
+        self, resume_id, resume_text: str, user_id: Optional[str] = None
     ) -> None:
         """
         extract and store structured resume data in the database
@@ -146,6 +152,7 @@ class ResumeService:
 
             processed_resume = ProcessedResume(
                 resume_id=resume_id,
+                user_id=user_id,
                 personal_data=json.dumps(structured_resume.get("personal_data", {}))
                 if structured_resume.get("personal_data")
                 else None,
@@ -312,3 +319,73 @@ class ResumeService:
             }
 
         return combined_data
+    
+    async def get_user_resumes(self, user_id: str):
+        """
+        Fetches all resumes for a specific user with their processed data.
+
+        Args:
+            user_id: The ID of the user
+
+        Returns:
+            List of resumes with both raw and processed data
+        """
+        # Fetch all resumes for the user
+        resume_query = select(Resume).where(Resume.user_id == user_id).order_by(Resume.created_at.desc())
+        resume_result = await self.db.execute(resume_query)
+        resumes = resume_result.scalars().all()
+
+        result = []
+        for resume in resumes:
+            # Fetch processed resume if exists
+            processed_query = select(ProcessedResume).where(
+                ProcessedResume.resume_id == resume.resume_id
+            )
+            processed_result = await self.db.execute(processed_query)
+            processed_resume = processed_result.scalars().first()
+
+            resume_data = {
+                "resume_id": resume.resume_id,
+                "raw_resume": {
+                    "id": resume.id,
+                    "content": resume.content,
+                    "content_type": resume.content_type,
+                    "created_at": resume.created_at.isoformat() if resume.created_at else None,
+                },
+                "processed_resume": None,
+            }
+
+            if processed_resume:
+                resume_data["processed_resume"] = {
+                    "personal_data": json.loads(processed_resume.personal_data)
+                    if processed_resume.personal_data
+                    else None,
+                    "experiences": json.loads(processed_resume.experiences).get("experiences", [])
+                    if processed_resume.experiences
+                    else None,
+                    "projects": json.loads(processed_resume.projects).get("projects", [])
+                    if processed_resume.projects
+                    else [],
+                    "skills": json.loads(processed_resume.skills).get("skills", [])
+                    if processed_resume.skills
+                    else [],
+                    "research_work": json.loads(processed_resume.research_work).get("research_work", [])
+                    if processed_resume.research_work
+                    else [],
+                    "achievements": json.loads(processed_resume.achievements).get("achievements", [])
+                    if processed_resume.achievements
+                    else [],
+                    "education": json.loads(processed_resume.education).get("education", [])
+                    if processed_resume.education
+                    else [],
+                    "extracted_keywords": json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
+                    if processed_resume.extracted_keywords
+                    else [],
+                    "processed_at": processed_resume.processed_at.isoformat()
+                    if processed_resume.processed_at
+                    else None,
+                }
+
+            result.append(resume_data)
+
+        return result

@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import BackgroundContainer from '@/components/common/background-container';
 import FileUpload from '@/components/common/file-upload';
-import ApiKeyMenu from '@/components/settings/api-key-menu';
+import UserMenu from '@/components/settings/user-menu';
 import ResumePreview from '@/components/dashboard/resume-preview';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function UploadResume() {
   const router = useRouter();
@@ -48,8 +48,19 @@ export default function UploadResume() {
   return (
     <BackgroundContainer innerClassName="justify-start pt-8 pb-8 overflow-y-auto">
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center gap-6 px-4 pb-8">
-        <div className="self-end">
-          <ApiKeyMenu />
+        <div className="w-full flex justify-between items-start">
+          {allowReplace && (
+            <Button
+              onClick={() => router.back()}
+              variant="ghost"
+              className="text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          )}
+          {!allowReplace && <div />}
+          <UserMenu />
         </div>
 
         <h1 className="text-4xl font-bold text-center text-white mb-2">Upload Your Resume</h1>

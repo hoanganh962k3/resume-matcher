@@ -5,6 +5,7 @@ from .exceptions import (
     validation_exception_handler,
     unhandled_exception_handler,
 )
+from .auth_dependencies import get_current_user_optional, get_current_user_required
 
 
 __all__ = [
@@ -17,4 +18,6 @@ __all__ = [
     "custom_http_exception_handler",
     "validation_exception_handler",
     "unhandled_exception_handler",
+    "get_current_user_optional",
+    "get_current_user_required",
 ]

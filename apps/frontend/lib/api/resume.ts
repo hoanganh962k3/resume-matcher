@@ -1,6 +1,19 @@
 import { ImprovedResult } from '@/components/common/resume_previewer_context';
+import { getAuthToken } from './auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+/**
+ * Get headers with authentication if available
+ */
+function getAuthHeaders(additionalHeaders: Record<string, string> = {}): HeadersInit {
+  const token = getAuthToken();
+  const headers: HeadersInit = { ...additionalHeaders };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 interface ResumeResponse {
   request_id: string;
@@ -33,7 +46,7 @@ export async function uploadJobDescriptions(
 ): Promise<string> {
   const res = await fetch(`${API_URL}/api/v1/jobs/upload`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ job_descriptions: descriptions, resume_id: resumeId }),
   });
   if (!res.ok) throw new Error(`Upload failed with status ${res.status}`);
@@ -48,7 +61,7 @@ export async function improveResume(resumeId: string, jobId: string): Promise<Im
   try {
     response = await fetch(`${API_URL}/api/v1/resumes/improve`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ resume_id: resumeId, job_id: jobId }),
     });
   } catch (networkError) {
@@ -80,7 +93,6 @@ interface JobResponse {
     job_id: string;
     raw_job: {
       id: number;
-      resume_id: string;
       content: string;
       created_at: string;
     };
@@ -103,7 +115,9 @@ interface JobResponse {
 
 /** Fetches a raw resume record for previewing the original upload */
 export async function fetchResume(resumeId: string): Promise<ResumeResponse['data']> {
-  const res = await fetch(`${API_URL}/api/v1/resumes?resume_id=${encodeURIComponent(resumeId)}`);
+  const res = await fetch(`${API_URL}/api/v1/resumes?resume_id=${encodeURIComponent(resumeId)}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) {
     throw new Error(`Failed to load resume (status ${res.status}).`);
   }
@@ -116,7 +130,9 @@ export async function fetchResume(resumeId: string): Promise<ResumeResponse['dat
 
 /** Fetches job details including processed data */
 export async function fetchJob(jobId: string): Promise<JobResponse['data']> {
-  const res = await fetch(`${API_URL}/api/v1/jobs?job_id=${encodeURIComponent(jobId)}`);
+  const res = await fetch(`${API_URL}/api/v1/jobs?job_id=${encodeURIComponent(jobId)}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) {
     throw new Error(`Failed to load job (status ${res.status}).`);
   }
@@ -125,4 +141,28 @@ export async function fetchJob(jobId: string): Promise<JobResponse['data']> {
     throw new Error('Job data is unavailable.');
   }
   return payload.data;
+}
+
+/** Fetches all resumes for the authenticated user */
+export async function fetchMyResumes(): Promise<ResumeResponse['data'][]> {
+  const res = await fetch(`${API_URL}/api/v1/resumes/my-resumes`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to load resumes (status ${res.status}).`);
+  }
+  const payload = await res.json();
+  return payload.data || [];
+}
+
+/** Fetches all jobs associated with a specific resume */
+export async function fetchJobsForResume(resumeId: string): Promise<JobResponse['data'][]> {
+  const res = await fetch(`${API_URL}/api/v1/jobs/resume/${encodeURIComponent(resumeId)}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to load jobs for resume (status ${res.status}).`);
+  }
+  const payload = await res.json();
+  return payload.data || [];
 }

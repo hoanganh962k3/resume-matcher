@@ -74,7 +74,7 @@ export default function LearningSchedulePage() {
   };
 
   const handleBack = () => {
-    router.push('/dashboard');
+    router.back();
   };
 
   return (
@@ -89,7 +89,7 @@ export default function LearningSchedulePage() {
               className="mb-4 text-gray-400 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              Back
             </Button>
 
             <h1 className="text-3xl font-bold text-white mb-2">

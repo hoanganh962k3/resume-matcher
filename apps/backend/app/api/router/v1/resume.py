@@ -16,6 +16,8 @@ from fastapi import (
 )
 
 from app.core import get_db_session
+from app.core.auth_dependencies import get_current_user_optional, get_current_user_required
+from app.models.user import User
 from app.services import (
     ResumeService,
     ScoreImprovementService,
@@ -41,6 +43,7 @@ async def upload_resume(
     request: Request,
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user_optional),
 ):
     """
     Accepts a PDF or DOCX file (max 2MB), converts it to HTML/Markdown, and stores it in the database.
@@ -97,11 +100,14 @@ async def upload_resume(
     
     try:
         resume_service = ResumeService(db)
+        # Get user_id if user is authenticated, None for guest uploads
+        user_id = str(current_user.id) if current_user else None
         resume_id = await resume_service.convert_and_store_resume(
             file_bytes=file_bytes,
             file_type=file.content_type,
             filename=file.filename,
             content_type="md",
+            user_id=user_id,
         )
     except ResumeValidationError as e:
         logger.warning(f"Resume validation failed: {str(e)}")
@@ -286,4 +292,45 @@ async def get_resume(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching resume data",
+        )
+
+
+@resume_router.get(
+    "/my-resumes",
+    summary="Get all resumes for the authenticated user",
+)
+async def get_my_resumes(
+    request: Request,
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user_required),
+):
+    """
+    Retrieves all resumes with their processed data for the authenticated user.
+
+    Returns:
+        List of resumes with both raw and processed data
+
+    Raises:
+        HTTPException: If user is not authenticated or if there's an error fetching data.
+    """
+    request_id = getattr(request.state, "request_id", str(uuid4()))
+    headers = {"X-Request-ID": request_id}
+
+    try:
+        resume_service = ResumeService(db)
+        resumes = await resume_service.get_user_resumes(user_id=str(current_user.id))
+
+        return JSONResponse(
+            content={
+                "request_id": request_id,
+                "data": resumes,
+            },
+            headers=headers,
+        )
+    
+    except Exception as e:
+        logger.error(f"Error fetching user resumes: {str(e)} - traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching user resumes",
         )

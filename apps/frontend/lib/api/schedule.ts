@@ -1,4 +1,18 @@
+import { getAuthToken } from './auth';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+/**
+ * Get headers with authentication if available
+ */
+function getAuthHeaders(additionalHeaders: Record<string, string> = {}): HeadersInit {
+  const token = getAuthToken();
+  const headers: HeadersInit = { ...additionalHeaders };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 export type ScheduleType = 'weekly' | 'monthly';
 export type ActivityType =
@@ -87,7 +101,7 @@ export async function generateLearningSchedule(
 ): Promise<LearningSchedule> {
   const res = await fetch(`${API_URL}/api/v1/schedule/generate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(request),
   });
 
