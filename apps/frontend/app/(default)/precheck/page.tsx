@@ -195,7 +195,7 @@ export default function PrecheckPage() {
               </div>
               {resumes.length > 0 && (
                 <Button
-                  onClick={() => router.push('/resume')}
+                  onClick={() => router.push('/resume?replace=1')}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   <FileText className="h-4 w-4 mr-2" />

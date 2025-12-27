@@ -38,6 +38,7 @@ def _configure_sqlite(engine: Engine) -> None:
 
     * Enable WAL mode (better concurrent writes).
     * Enforce foreign-key constraints.
+    * Set timezone to GMT+7.
     * Safe noop for non-SQLite engines.
     """
     if engine.dialect.name != "sqlite":
@@ -48,6 +49,8 @@ def _configure_sqlite(engine: Engine) -> None:
         cursor = dbapi_conn.cursor()
         cursor.execute("PRAGMA journal_mode=WAL;")
         cursor.execute("PRAGMA foreign_keys=ON;")
+        # Set timezone offset to GMT+7 (25200 seconds = 7 hours)
+        cursor.execute("PRAGMA timezone = '+07:00';")
         cursor.close()
 
 

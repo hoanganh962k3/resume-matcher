@@ -20,7 +20,17 @@ interface JobEntry {
   status: SubmissionStatus;
 }
 
-export default function JobDescriptionUploadTextArea() {
+interface JobDescriptionUploadTextAreaProps {
+  selectedJobId?: string;
+  selectedJobData?: any;
+  onUsedJobsChange?: (jobIds: string[]) => void;
+}
+
+export default function JobDescriptionUploadTextArea({ 
+  selectedJobId, 
+  selectedJobData,
+  onUsedJobsChange
+}: JobDescriptionUploadTextAreaProps = {}) {
   const MAX_JOBS = 3;
   const [jobs, setJobs] = useState<JobEntry[]>([
     {
@@ -68,7 +78,38 @@ export default function JobDescriptionUploadTextArea() {
     } catch (error) {
       console.warn('Unable to save jobs to localStorage', error);
     }
+    
+    // Notify parent component of currently used job IDs
+    if (onUsedJobsChange) {
+      const usedIds = jobs
+        .filter(job => job.jobId)
+        .map(job => job.jobId as string);
+      onUsedJobsChange(usedIds);
+    }
   }, [jobs]);
+
+  // Handle selected job from parent component (job selector)
+  useEffect(() => {
+    if (selectedJobId && selectedJobData) {
+      console.log('Selected job from dropdown:', selectedJobId, selectedJobData);
+      
+      // Only update if the current job tab doesn't already have this job
+      const currentJob = jobs[selectedJobIndex];
+      if (currentJob.jobId !== selectedJobId) {
+        // Update the currently selected job entry with the selected job data
+        setJobs((prev) => {
+          const updated = [...prev];
+          updated[selectedJobIndex] = {
+            ...updated[selectedJobIndex],
+            jobId: selectedJobId,
+            jobData: selectedJobData,
+            status: 'success',
+          };
+          return updated;
+        });
+      }
+    }
+  }, [selectedJobId, selectedJobData]);
 
   useEffect(() => {
     let resolvedId: string | null = null;
