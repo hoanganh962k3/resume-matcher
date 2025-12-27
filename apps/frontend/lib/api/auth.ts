@@ -2,6 +2,7 @@
  * Authentication API client for user registration and login
  */
 import { API_BASE_URL } from './config';
+import { useState, useEffect } from 'react';
 
 export interface UserRegister {
   email: string;
@@ -181,4 +182,25 @@ export function removeUserInfo(): void {
 export function logout(): void {
   removeAuthToken();
   removeUserInfo();
+}
+
+/**
+ * Custom hook to get authentication status and user info
+ */
+export function useAuth() {
+  const [user, setUser] = useState<UserResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = getAuthToken();
+    const storedUser = getUserInfo();
+    
+    if (token && storedUser) {
+      setUser(storedUser);
+    }
+    
+    setLoading(false);
+  }, []);
+
+  return { user, loading, isAuthenticated: !!user };
 }

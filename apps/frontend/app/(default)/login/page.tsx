@@ -7,7 +7,7 @@ import BackgroundContainer from '@/components/common/background-container';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login, register, storeAuthToken, storeUserInfo } from '@/lib/api/auth';
+import { login, register, storeAuthToken, storeUserInfo, logout } from '@/lib/api/auth';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 
 function LoginPageContent() {
@@ -84,6 +84,24 @@ function LoginPageContent() {
       password: '',
       name: '',
     });
+  };
+
+  const handleGuestContinue = () => {
+    // Clear any existing auth data to ensure true guest mode
+    logout();
+    
+    // Clear all resume/job workflow data for a fresh start
+    try {
+      localStorage.removeItem('resumeMatcher:lastResumeId');
+      localStorage.removeItem('resumeMatcher:lastResumeName');
+      localStorage.removeItem('resumeMatcher:savedJobs');
+      localStorage.removeItem('resumeMatcher:lastJobId');
+      sessionStorage.clear();
+    } catch (error) {
+      console.warn('Unable to clear workflow data', error);
+    }
+    
+    router.push('/resume');
   };
 
   return (
@@ -233,12 +251,13 @@ function LoginPageContent() {
               You can also continue as a guest, but your data won't be saved.
             </p>
             <div className="mt-3 text-center">
-              <Link
-                href="/resume"
+              <button
+                type="button"
+                onClick={handleGuestContinue}
                 className="text-gray-400 hover:text-white text-sm underline transition-colors"
               >
                 Continue as Guest
-              </Link>
+              </button>
             </div>
           </div>
         </div>

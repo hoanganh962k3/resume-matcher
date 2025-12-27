@@ -6,21 +6,60 @@ import BackgroundContainer from '@/components/common/background-container';
 import FileUpload from '@/components/common/file-upload';
 import UserMenu from '@/components/settings/user-menu';
 import ResumePreview from '@/components/dashboard/resume-preview';
+import ResumeSelector from '@/components/common/resume-selector';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/lib/api/auth';
 
 export default function UploadResume() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const [checking, setChecking] = useState(true);
   const [uploadedResumeData, setUploadedResumeData] = useState<any>(null);
+  const [selectedResumeId, setSelectedResumeId] = useState<string | undefined>(undefined);
   const [isUploading, setIsUploading] = useState(false);
   const allowReplace = searchParams.get('replace') === '1';
 
   const handleResumeProcessed = (resumeData: any) => {
     console.log('Resume processed callback received:', resumeData);
     setUploadedResumeData(resumeData);
+    setSelectedResumeId(resumeData?.resume_id);
     setIsUploading(false);
+  };
+
+  const handleResumeSelect = (resumeId: string, resumeData: any) => {
+    console.log('Resume selected:', resumeId);
+    setSelectedResumeId(resumeId);
+    
+    // Transform the API response to match the format expected by ResumePreview
+    if (resumeData?.processed_resume) {
+      const processed = resumeData.processed_resume;
+      const formattedData = {
+        personalInfo: processed.personal_data || undefined,
+        workExperience: processed.experiences || [],
+        education: processed.education || [],
+        personalProjects: processed.projects || [],
+        additional: processed.skills || undefined,
+      };
+      console.log('Formatted resume data for preview:', formattedData);
+      setUploadedResumeData(formattedData);
+    } else {
+      console.warn('No processed_resume data available for selected resume');
+      setUploadedResumeData(null);
+    }
+    
+    // Store in localStorage for use in other pages
+    try {
+      localStorage.setItem('resumeMatcher:lastResumeId', resumeId);
+      // Store resume name if available
+      const personalData = resumeData?.processed_resume?.personal_data;
+      if (personalData?.name) {
+        localStorage.setItem('resumeMatcher:lastResumeName', personalData.name);
+      }
+    } catch (error) {
+      console.warn('Unable to persist resume ID', error);
+    }
   };
 
   useEffect(() => {
@@ -63,8 +102,33 @@ export default function UploadResume() {
           <UserMenu />
         </div>
 
-        <h1 className="text-4xl font-bold text-center text-white mb-2">Upload Your Resume</h1>
+        <h1 className="text-4xl font-bold text-center text-white mb-2">Manage Your Resumes</h1>
         <p className="text-center text-gray-300 mb-8 max-w-xl">
+          Select from your previously uploaded resumes or upload a new one below.
+        </p>
+
+        {/* Resume Selector - Only show for logged in users */}
+        {user && (
+          <div className="w-full mb-6">
+            <ResumeSelector 
+              onResumeSelect={handleResumeSelect}
+              selectedResumeId={selectedResumeId}
+            />
+          </div>
+        )}
+
+        {/* Divider */}
+        {user && (
+          <div className="w-full flex items-center gap-4 my-4">
+            <div className="flex-1 h-px bg-gray-700" />
+            <span className="text-gray-400 text-sm">OR</span>
+            <div className="flex-1 h-px bg-gray-700" />
+          </div>
+        )}
+
+        {/* Upload New Resume Section */}
+        <h2 className="text-2xl font-semibold text-white mb-4">Upload New Resume</h2>
+        <p className="text-center text-gray-400 mb-6 max-w-xl">
           Drag and drop your resume file below or click to browse. Supported formats: PDF, DOC, DOCX
           (up to 2 MB).
         </p>
@@ -83,7 +147,7 @@ export default function UploadResume() {
         </div>
 
         {/* Continue Button */}
-        {uploadedResumeData && (
+        {(uploadedResumeData || selectedResumeId) && (
           <Button
             onClick={() => router.push('/jobs')}
             className="mt-6 px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold flex items-center gap-2"

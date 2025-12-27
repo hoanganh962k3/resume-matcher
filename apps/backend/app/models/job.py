@@ -29,7 +29,7 @@ class ProcessedJob(Base):
     extracted_keywords = Column(JSON, nullable=True)
     processed_at = Column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        server_default=text("datetime('now', '+7 hours')"),
         nullable=False,
         index=True,
     )
@@ -48,7 +48,7 @@ class Job(Base):
     content = Column(Text, nullable=False)
     created_at = Column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        server_default=text("datetime('now', '+7 hours')"),
         nullable=False,
         index=True,
     )

@@ -4,7 +4,10 @@ from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+
+# GMT+7 timezone
+GMT_PLUS_7 = timezone(timedelta(hours=7))
 
 
 class UUID(TypeDecorator):
@@ -49,8 +52,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(GMT_PLUS_7))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(GMT_PLUS_7), onupdate=lambda: datetime.now(GMT_PLUS_7))
 
     processed_resumes = relationship(
         "ProcessedResume", back_populates="owner", cascade="all, delete-orphan"

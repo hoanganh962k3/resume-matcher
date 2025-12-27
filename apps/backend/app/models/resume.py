@@ -26,7 +26,7 @@ class ProcessedResume(Base):
     extracted_keywords = Column(JSON, nullable=True)
     processed_at = Column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        server_default=text("datetime('now', '+7 hours')"),
         nullable=False,
         index=True,
     )
@@ -46,7 +46,7 @@ class Resume(Base):
     content_type = Column(String, nullable=False)
     created_at = Column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        server_default=text("datetime('now', '+7 hours')"),
         nullable=False,
         index=True,
     )
