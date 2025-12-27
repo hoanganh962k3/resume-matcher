@@ -20,7 +20,7 @@ class OpenAIProvider(Provider):
         api_key = api_key or settings.LLM_API_KEY or os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ProviderError("OpenAI API key is missing")
-        self._client = OpenAI(api_key=api_key)
+        self._client = OpenAI(api_key=api_key, service_tier="priority")
         self.model = model_name
         self.opts = opts
         self.instructions = ""
@@ -67,7 +67,7 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
         api_key = api_key or settings.EMBEDDING_API_KEY or os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ProviderError("OpenAI API key is missing")
-        self._client = OpenAI(api_key=api_key)
+        self._client = OpenAI(api_key=api_key, service_tier="priority")
         self._model = embedding_model
 
     async def embed(self, text: str) -> list[float]:
