@@ -1,146 +1,268 @@
-<div align="center">
-
-[![Resume Matcher](assets/page_2.png)](https://www.resumematcher.fyi)
-
 # Resume Matcher
 
-[𝙹𝚘𝚒𝚗 𝙳𝚒𝚜𝚌𝚘𝚛𝚍](https://dsc.gg/resume-matcher) ✦ [𝚆𝚎𝚋𝚜𝚒𝚝𝚎](https://resumematcher.fyi) ✦ [𝙷𝚘𝚠 𝚝𝚘 𝙸𝚗𝚜𝚝𝚊𝚕𝚕](#how-to-install) ✦ [𝙲𝚘𝚗𝚝𝚛𝚒𝚋𝚞𝚝𝚘𝚛𝚜](#contributors) ✦ [𝙳𝚘𝚗𝚊𝚝𝚎](#support-the-development-by-donating) ✦ [𝚃𝚠𝚒𝚝𝚝𝚎𝚛/𝚇](https://twitter.com/ssrbhr) ✦ [𝙻𝚒𝚗𝚔𝚎𝚍𝙸𝚗](https://www.linkedin.com/company/resume-matcher/)
+An AI-powered platform for resume optimization and ATS compatibility analysis. Built with FastAPI and Next.js.
 
-**Stop getting auto-rejected by ATS bots.** Resume Matcher is the AI-powered platform that reverse-engineers hiring algorithms to show you exactly how to tailor your resume. Get the keywords, formatting, and insights that actually get you past the first screen and into human hands.
+## Overview
 
-Hoping to make this, **VS Code for making resumes**.
-
-</div>
-
-<br>
-
-<div align="center">
-
-![Stars](https://img.shields.io/github/stars/srbhr/Resume-Matcher?labelColor=black&style=for-the-badge&color=c20a71)
-![Apache 2.0](https://img.shields.io/github/license/srbhr/Resume-Matcher?labelColor=black&style=for-the-badge&color=c20a71) ![Forks](https://img.shields.io/github/forks/srbhr/Resume-Matcher?labelColor=black&style=for-the-badge&color=c20a71) ![version](https://img.shields.io/badge/Version-0.1%20Veridis%20Quo-FFF?labelColor=black&logo=LinkedIn&style=for-the-badge&color=c20a71)
-
-[![Discord](https://img.shields.io/discord/1122069176962531400?labelColor=black&logo=discord&logoColor=c20a71&style=for-the-badge&color=c20a71)](https://dsc.gg/resume-matcher) [![Website](https://img.shields.io/badge/website-Resume%20Matcher-FFF?labelColor=black&style=for-the-badge&color=c20a71)](https://resumematcher.fyi) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Resume%20Matcher-FFF?labelColor=black&logo=LinkedIn&style=for-the-badge&color=c20a71)](https://www.linkedin.com/company/resume-matcher/)
-
-<a href="https://trendshift.io/repositories/565" target="_blank"><img src="https://trendshift.io/api/badge/repositories/565" alt="srbhr%2FResume-Matcher | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-![Vercel OSS Program](https://vercel.com/oss/program-badge.svg)
-
-</div>
-
-> \[!IMPORTANT]
->
-> This project is in active development. New features are being added continuously, and we welcome contributions from the community. There are some breaking changes on the `main` branch. If you have any suggestions or feature requests, please feel free to open an issue on GitHub or discuss it on our [Discord](https://dsc.gg/resume-matcher) server.
-
-## Getting started with Resume Matcher
-
-Resume Matcher is designed to help you optimize your resume with the aim to highlight your skills and experience in a way that resonates with potential employers.
-
-We're actively working on improving the platform, building towards a **VS Code for making resumes**, and adding new features. The best way to stay updated is to join the Discord discussion and be part of the active development community.
-
-> Join our [Discord](https://dsc.gg/resume-matcher) community 👇
-[![Discord](assets/resume_matcher_discord.png)](https://dsc.gg/resume-matcher)
-
-> Follow us on [LinkedIn](https://www.linkedin.com/company/resume-matcher/) ✨
-[![LinkedIn](assets/resume_matcher_linkedin.png)](https://www.linkedin.com/company/resume-matcher/)
-
-> ⭐ Star Resume Matcher to support the development and get updates on GitHub.
-![Star Resume Matcher](assets/star_resume_matcher.png)
-
-## Key Features
-
-![resume_matcher_features](assets/resume_matcher_features.png)
-
-- **Works locally**: No need to upload your resume to a server. Everything runs on your machine with open source AI models by Ollama.
-- **ATS Compatibility**: Get a detailed analysis of your resume's compatibility with ATS systems.
-- **Instant Match Score**: Upload resume & job description for a quick match score and key improvement areas.
-- **Keyword Optimizer**: Align your resume with job keywords and identify critical content gaps.
-- **Guided Improvements**: Get clear suggestions to make your resume stand out.
-
-### Roadmap
-
-If you have any suggestions or feature requests, please feel free to open an issue on GitHub. And discuss it on our [Discord](https://dsc.gg/resume-matcher) server.
-
-- Visual keyword highlighting.
-- AI Canvas, which can help to craft impactful, metric-driven resume content.
-- Multi-job description optimization.
+Resume Matcher helps optimize resumes by analyzing compatibility with job descriptions, extracting keywords, and providing improvement suggestions.
 
 ## How to Install
 
 ![Installation](assets/how_to_install_resumematcher.png)
 
-Follow the instructions in the [SETUP.md](SETUP.md) file to set up the project locally. The setup script will install all the necessary dependencies and configure your environment.
+### Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+| Technology   | Version Required | Purpose |
+|--------------|-----------------|---------|
+| **Node.js**  | 18+ | Frontend development and build tools |
+| **Python**   | 3.12+ | Backend API server |
+| **uv**       | Latest | Fast Python package installer |
+| **Ollama**   | 0.6.7+ | Local AI model serving (optional, defaults to OpenAI) |
+
+**Installation links:**
+- [Node.js](https://nodejs.org/) - Download LTS version
+- [Python](https://www.python.org/downloads/) - v3.12 or higher
+- [uv](https://github.com/astral-sh/uv) - Fast Python package installer
+- [Ollama](https://ollama.com/download) - Only if using local AI models
+
+### Quick Start (Automated Setup)
+
+The easiest way to get started is using our automated setup scripts:
+
+#### **Windows (PowerShell)**
+```powershell
+# Clone the repository
+git clone https://github.com/srbhr/Resume-Matcher.git
+cd Resume-Matcher
+
+# Run automated setup (installs dependencies, configures environment)
+.\setup.ps1
+
+# Start the development server
+.\setup.ps1 -StartDev
+```
+
+#### **Linux/macOS (Bash)**
+```bash
+# Clone the repository
+git clone https://github.com/srbhr/Resume-Matcher.git
+cd Resume-Matcher
+
+# Make setup script executable
+chmod +x setup.sh
+
+# Run automated setup
+./setup.sh
+
+# Start the development server
+./setup.sh --start-dev
+```
+
+The automated setup will:
+- ✅ Verify/install prerequisites (Node.js, Python, uv)
+- ✅ Install Ollama (if needed for local AI models)
+- ✅ Create `.env` configuration files
+- ✅ Install all frontend and backend dependencies
+- ✅ Pull required AI models (gemma3:4b by default)
+
+### Manual Setup (Step-by-Step)
+
+If you prefer to set up manually or the automated script doesn't work:
+
+#### **1. Clone the Repository**
+```bash
+git clone https://github.com/srbhr/Resume-Matcher.git
+cd Resume-Matcher
+```
+
+#### **2. Install Dependencies**
+
+**Install root dependencies:**
+```bash
+npm install
+```
+
+**Install frontend dependencies:**
+```bash
+cd apps/frontend
+npm install
+cd ../..
+```
+
+**Install backend dependencies:**
+```bash
+cd apps/backend
+uv sync  # This creates a virtual environment and installs all Python packages
+cd ../..
+```
+
+#### **3. Configure Environment Variables**
+
+**Create root `.env` file:**
+```bash
+# Copy from example
+cp .env.example .env
+
+# Edit with your settings (optional, defaults work for local development)
+```
+
+**Create backend `.env` file:**
+```bash
+# Copy from sample
+cp apps/backend/.env.sample apps/backend/.env
+
+# Configure AI provider (defaults to OpenAI, change to Ollama for local models)
+```
+
+**Key environment variables:**
+- `LLM_PROVIDER` - Set to `ollama` for local AI or `openai` for cloud
+- `EMBEDDING_PROVIDER` - Set to `ollama` or `openai`
+- `NEXT_PUBLIC_API_URL` - Frontend API endpoint (default: `http://localhost:8000`)
+- `ASYNC_DATABASE_URL` - Database connection (default: `sqlite+aiosqlite:///./app.db`)
+
+#### **4. Start Development Servers**
+
+**Option A: Start both frontend and backend together:**
+```bash
+npm run dev
+```
+
+**Option B: Start separately:**
+```bash
+# Terminal 1 - Backend
+npm run dev:backend
+
+# Terminal 2 - Frontend  
+npm run dev:frontend
+```
+
+#### **5. Access the Application**
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **API Documentation:** http://localhost:8000/docs
+
+### Technology Stack
 
 The project is built using:
 
-- FastAPI for the backend.
-- Next.js for the frontend.
-- Ollama for local AI model serving.
-- Tailwind CSS for styling.
-- SQLite for the database.
+- **Backend:** FastAPI (Python 3.12+) with async/await patterns
+- **Frontend:** Next.js 15+ with App Router and TypeScript
+- **AI Models:** Ollama serving gemma3:4b locally (or OpenAI API)
+- **Styling:** Tailwind CSS 4.0 with Radix UI components
+- **Database:** SQLite with SQLAlchemy ORM
+- **Document Processing:** MarkItDown for PDF/DOCX conversion
 
-| Technology   | Info/Version                               |
-|--------------|---------------------------------------|
-| Python      | 3.12+                   |
-| Next.js      | 15+                   |
-| Ollama       |        0.6.7        |
+## Docker Setup (Alternative)
 
-## Docker
+You can run the whole stack with Docker and docker-compose as an alternative to local installation.
 
-You can run the whole stack with Docker and docker-compose.
-
-- Development (hot reload):
+### Development Mode (with hot reload):
 
 ```bash
-# start services with hot-reload for backend and frontend
+# Start services with hot-reload for backend and frontend
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-- Production (build images and run):
+This mounts your local files into containers so changes are reflected immediately.
+
+### Production Mode:
 
 ```bash
+# Build and run in production mode
 docker compose up --build -d
-# then visit http://localhost:3000 and API on http://localhost:8000
+
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
 ```
 
-Notes:
-- The production compose sets `NEXT_PUBLIC_API_URL` to `http://backend:8000` so containers talk to each other.
-- The dev compose mounts local files into the containers and runs the dev servers for both apps.
+**Docker Notes:**
+- Production compose sets `NEXT_PUBLIC_API_URL` to `http://backend:8000` for container communication
+- Development compose mounts local files and runs dev servers
+- No need to install Node.js, Python, or dependencies locally when using Docker
 
-## Join Us and Contribute
+## Common Commands
 
-![how to contribute](assets/how_to_contribute.png)
+### Development Commands
 
-We welcome contributions from everyone! Whether you're a developer, designer, or just someone who wants to help out. All the contributors are listed in the [about page](https://resumematcher.fyi/about) on our website and on the GitHub Readme here.
+```bash
+# Start development servers (both frontend and backend)
+npm run dev
 
-Check out the roadmap if you would like to work on the features that are planned for the future. If you have any suggestions or feature requests, please feel free to open an issue on GitHub and discuss it on our [Discord](https://dsc.gg/resume-matcher) server.
+# Start only backend
+npm run dev:backend
 
-## Contributors
+# Start only frontend  
+npm run dev:frontend
 
-![Contributors](assets/contributors.png)
+# Build for production
+npm run build
 
-<a href="https://github.com/srbhr/Resume-Matcher/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=srbhr/Resume-Matcher" />
-</a>
+# Lint frontend code
+npm run lint
+```
 
-## Support the Development by Donating
+### Database Commands
 
-![donate](assets/supporting_resume_matcher.png)
+```bash
+# Reset database (Windows PowerShell)
+.\reset-database.ps1
 
-If you would like to support the development of Resume Matcher, you can do so by donating. Your contributions will help us keep the project alive and continue adding new features.
+# Reset database (Linux/macOS)
+python apps/backend/reset_db.py
+```
 
-| Platform  | Link                                   |
-|-----------|----------------------------------------|
-| GitHub    | [![GitHub Sponsors](https://img.shields.io/github/sponsors/srbhr?style=for-the-badge&color=c20a71&labelColor=black&logo=github)](https://github.com/sponsors/srbhr) |
-| Buy Me a Coffee | [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&color=c20a72&logoColor=white)](https://www.buymeacoffee.com/srbhr) |
+## Troubleshooting
 
-<details>
-  <summary><kbd>Star History</kbd></summary>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=srbhr/resume-matcher&theme=dark&type=Date">
-    <img width="100%" src="https://api.star-history.com/svg?repos=srbhr/resume-matcher&theme=dark&type=Date">
-  </picture>
-</details>
+### Common Issues
 
-## Resume Matcher is a part of [Vercel Open Source Program](https://vercel.com/oss)
+**1. Port already in use**
+```bash
+# If port 8000 or 3000 is already in use, kill the process:
+# Windows:
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
 
-![Vercel OSS Program](https://vercel.com/oss/program-badge.svg)
+# Linux/macOS:
+lsof -ti:8000 | xargs kill -9
+```
+
+**2. Module not found errors**
+```bash
+# Reinstall dependencies
+npm install
+cd apps/backend && uv sync
+```
+
+**3. Ollama connection errors**
+```bash
+# Make sure Ollama is running
+ollama serve
+
+# Pull the required model
+ollama pull gemma3:4b
+```
+
+**4. Python version issues**
+```bash
+# Check Python version (must be 3.12+)
+python --version
+
+# If using wrong version, update Python or use uv with specific version:
+uv venv --python 3.12
+```
+
+**5. Database errors**
+```bash
+# Reset the database
+.\reset-database.ps1  # Windows
+python apps/backend/reset_db.py  # Linux/macOS
+```
+
+For more detailed setup and troubleshooting, see [SETUP.md](SETUP.md).
+
+## License
+
+Apache 2.0 License - see [LICENSE](LICENSE) file for details.
