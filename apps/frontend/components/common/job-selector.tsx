@@ -1,34 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchJobsForResume } from '@/lib/api/resume';
+import { fetchJobsForResume, fetchAllJobsForUser } from '@/lib/api/resume';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Briefcase, Loader2 } from 'lucide-react';
 
 interface JobSelectorProps {
-  resumeId: string;
+  resumeId?: string;
   onJobSelect: (jobId: string, jobData: any) => void;
   selectedJobId?: string;
   excludeJobIds?: string[];
+  fetchAllUserJobs?: boolean; // New prop to determine whether to fetch all user jobs
 }
 
-export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excludeJobIds = [] }: JobSelectorProps) {
+export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excludeJobIds = [], fetchAllUserJobs = false }: JobSelectorProps) {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (resumeId) {
-      loadJobs();
-    }
-  }, [resumeId]);
+    loadJobs();
+  }, [resumeId, fetchAllUserJobs]);
 
   const loadJobs = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchJobsForResume(resumeId);
+      
+      let data;
+      if (fetchAllUserJobs) {
+        // Fetch all jobs for the user
+        data = await fetchAllJobsForUser();
+      } else if (resumeId) {
+        // Fetch jobs for a specific resume
+        data = await fetchJobsForResume(resumeId);
+      } else {
+        data = [];
+      }
+      
       setJobs(data);
       
       // Auto-select if only one job exists
@@ -66,7 +76,9 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
     return (
       <div className="flex items-center gap-2 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
         <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-        <span className="text-gray-300">Loading jobs for this resume...</span>
+        <span className="text-gray-300">
+          {fetchAllUserJobs ? 'Loading your jobs...' : 'Loading jobs for this resume...'}
+        </span>
       </div>
     );
   }
@@ -85,7 +97,11 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
   if (jobs.length === 0) {
     return (
       <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-        <p className="text-gray-300">No jobs found for this resume. Upload a job description below.</p>
+        <p className="text-gray-300">
+          {fetchAllUserJobs 
+            ? 'No jobs found. Upload a job description below.'
+            : 'No jobs found for this resume. Upload a job description below.'}
+        </p>
       </div>
     );
   }
@@ -131,7 +147,11 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
       
       <Select value={selectedJobId} onValueChange={handleJobChange}>
         <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white">
-          <SelectValue placeholder="Choose from jobs associated with this resume..." />
+          <SelectValue placeholder={
+            fetchAllUserJobs 
+              ? "Choose from your uploaded jobs..." 
+              : "Choose from jobs associated with this resume..."
+          } />
         </SelectTrigger>
         <SelectContent className="bg-gray-800 border-gray-700">
           {availableJobs.map((job) => (
