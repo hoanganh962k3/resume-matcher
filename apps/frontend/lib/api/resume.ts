@@ -166,3 +166,15 @@ export async function fetchJobsForResume(resumeId: string): Promise<JobResponse[
   const payload = await res.json();
   return payload.data || [];
 }
+
+/** Fetches all jobs for the authenticated user, regardless of resume association */
+export async function fetchAllJobsForUser(): Promise<JobResponse['data'][]> {
+  const res = await fetch(`${API_URL}/api/v1/jobs/user/all`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to load jobs for user (status ${res.status}).`);
+  }
+  const payload = await res.json();
+  return payload.data || [];
+}

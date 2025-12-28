@@ -182,3 +182,45 @@ async def get_jobs_for_resume(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching jobs for resume",
         )
+
+
+@job_router.get(
+    "/user/all",
+    summary="Get all jobs associated with the current user",
+)
+async def get_all_jobs_for_user(
+    request: Request,
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user_required),
+):
+    """
+    Retrieves all jobs with their processed data associated with the current user,
+    regardless of resume association.
+
+    Returns:
+        List of jobs with both raw and processed data
+
+    Raises:
+        HTTPException: If user is not authenticated or if there's an error fetching data.
+    """
+    request_id = getattr(request.state, "request_id", str(uuid4()))
+    headers = {"X-Request-ID": request_id}
+
+    try:
+        job_service = JobService(db)
+        jobs = await job_service.get_all_jobs_for_user(user_id=str(current_user.id))
+
+        return JSONResponse(
+            content={
+                "request_id": request_id,
+                "data": jobs,
+            },
+            headers=headers,
+        )
+    
+    except Exception as e:
+        logger.error(f"Error fetching jobs for user: {str(e)} - traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching jobs for user",
+        )

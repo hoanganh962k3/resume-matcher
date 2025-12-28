@@ -79,11 +79,11 @@ function JobDescriptionsContent() {
           </p>
         </div>
 
-        {/* Job Selector - Only show for logged in users with a resume */}
-        {user && resumeId && (
+        {/* Job Selector - Only show for logged in users */}
+        {user && (
           <div className="w-full mb-6 max-w-3xl mx-auto">
             <JobSelector 
-              resumeId={resumeId}
+              fetchAllUserJobs={true}
               onJobSelect={handleJobSelect}
               selectedJobId={selectedJobId}
               excludeJobIds={usedJobIds}
@@ -92,7 +92,7 @@ function JobDescriptionsContent() {
         )}
 
         {/* Divider */}
-        {user && resumeId && (
+        {user && (
           <div className="w-full flex items-center gap-4 my-4 max-w-3xl mx-auto">
             <div className="flex-1 h-px bg-gray-700" />
             <span className="text-gray-400 text-sm">OR</span>

@@ -343,3 +343,57 @@ class JobService:
             result.append(job_data)
 
         return result
+
+    async def get_all_jobs_for_user(self, user_id: str) -> List[Dict]:
+        """
+        Fetches all jobs associated with a user, regardless of resume association.
+
+        Args:
+            user_id: The ID of the user
+
+        Returns:
+            List of jobs with both raw and processed data
+        """
+        # Fetch all jobs that belong to the user
+        job_query = select(Job).where(
+            Job.user_id == user_id
+        ).order_by(Job.created_at.desc())
+        job_result = await self.db.execute(job_query)
+        jobs = job_result.scalars().all()
+
+        result = []
+        for job in jobs:
+            # Fetch processed job if exists
+            processed_query = select(ProcessedJob).where(ProcessedJob.job_id == job.job_id)
+            processed_result = await self.db.execute(processed_query)
+            processed_job = processed_result.scalars().first()
+
+            job_data = {
+                "job_id": job.job_id,
+                "raw_job": {
+                    "id": job.id,
+                    "content": job.content,
+                    "created_at": job.created_at.isoformat() if job.created_at else None,
+                },
+                "processed_job": None,
+            }
+
+            if processed_job:
+                job_data["processed_job"] = {
+                    "job_title": processed_job.job_title,
+                    "company_profile": json.loads(processed_job.company_profile) if processed_job.company_profile else None,
+                    "location": json.loads(processed_job.location) if processed_job.location else None,
+                    "date_posted": processed_job.date_posted,
+                    "employment_type": processed_job.employment_type,
+                    "job_summary": processed_job.job_summary,
+                    "key_responsibilities": json.loads(processed_job.key_responsibilities).get("key_responsibilities", []) if processed_job.key_responsibilities else None,
+                    "qualifications": json.loads(processed_job.qualifications) if processed_job.qualifications else None,
+                    "compensation_and_benfits": json.loads(processed_job.compensation_and_benfits) if processed_job.compensation_and_benfits else None,
+                    "application_info": json.loads(processed_job.application_info) if processed_job.application_info else None,
+                    "extracted_keywords": json.loads(processed_job.extracted_keywords).get("extracted_keywords", []) if processed_job.extracted_keywords else None,
+                    "processed_at": processed_job.processed_at.isoformat() if processed_job.processed_at else None,
+                }
+
+            result.append(job_data)
+
+        return result
