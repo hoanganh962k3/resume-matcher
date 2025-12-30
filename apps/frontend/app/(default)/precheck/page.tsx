@@ -45,7 +45,7 @@ export default function PrecheckPage() {
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingJobs, setLoadingJobs] = useState(false);
-  const [comparing, setComparing] = useState(false);
+  const [comparingJobId, setComparingJobId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
 
@@ -100,7 +100,7 @@ export default function PrecheckPage() {
 
   const handleCompareClick = async (resumeId: string, jobId: string) => {
     // Fetch and prepare data for dashboard
-    setComparing(true);
+    setComparingJobId(jobId);
     setError(null);
     try {
       const { improveResume } = await import('@/lib/api/resume');
@@ -116,7 +116,7 @@ export default function PrecheckPage() {
     } catch (err) {
       console.error('Failed to prepare comparison:', err);
       setError('Failed to prepare comparison. Please try again.');
-      setComparing(false);
+      setComparingJobId(null);
     }
   };
 
@@ -329,12 +329,12 @@ export default function PrecheckPage() {
                                   size="sm"
                                   variant="outline"
                                   className="shrink-0"
-                                  disabled={comparing}
+                                  disabled={comparingJobId === job.job_id}
                                 >
-                                  {comparing ? (
+                                  {comparingJobId === job.job_id ? (
                                     <>
                                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                      Comparing...
+                                      Loading...
                                     </>
                                   ) : (
                                     'View Match'
