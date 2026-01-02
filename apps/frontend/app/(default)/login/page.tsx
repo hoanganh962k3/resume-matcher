@@ -34,11 +34,11 @@ function LoginPageContent() {
           email: formData.email,
           password: formData.password,
         });
-        
+
         // Store token and user info
         storeAuthToken(response.access_token);
         storeUserInfo(response.user);
-        
+
         // Check if there's a redirect URL, default to precheck page for logged-in users
         const redirect = searchParams.get('redirect') || '/precheck';
         router.push(redirect);
@@ -49,17 +49,17 @@ function LoginPageContent() {
           setLoading(false);
           return;
         }
-        
+
         const response = await register({
           email: formData.email,
           password: formData.password,
           name: formData.name,
         });
-        
+
         // Store token and user info
         storeAuthToken(response.access_token);
         storeUserInfo(response.user);
-        
+
         // Redirect to precheck page to see all resumes
         router.push('/precheck');
       }
@@ -89,7 +89,7 @@ function LoginPageContent() {
   const handleGuestContinue = () => {
     // Clear any existing auth data to ensure true guest mode
     logout();
-    
+
     // Clear all resume/job workflow data for a fresh start
     try {
       localStorage.removeItem('resumeMatcher:lastResumeId');
@@ -100,7 +100,7 @@ function LoginPageContent() {
     } catch (error) {
       console.warn('Unable to clear workflow data', error);
     }
-    
+
     router.push('/resume');
   };
 
@@ -108,7 +108,10 @@ function LoginPageContent() {
     <BackgroundContainer className="min-h-screen" innerClassName="overflow-auto">
       <div className="max-w-md mx-auto px-4 py-8">
         {/* Back Button */}
-        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
+        <Link
+          href="/"
+          className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
@@ -120,8 +123,8 @@ function LoginPageContent() {
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
             <p className="text-gray-400">
-              {isLogin 
-                ? 'Sign in to continue to Resume Matcher' 
+              {isLogin
+                ? 'Sign in to continue to Resume Matcher'
                 : 'Sign up to start optimizing your resume'}
             </p>
           </div>
@@ -189,9 +192,7 @@ function LoginPageContent() {
                 className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
               />
               {!isLogin && (
-                <p className="text-gray-500 text-xs mt-1">
-                  Must be at least 6 characters
-                </p>
+                <p className="text-gray-500 text-xs mt-1">Must be at least 6 characters</p>
               )}
             </div>
 
@@ -233,7 +234,7 @@ function LoginPageContent() {
           {/* Toggle Mode */}
           <div className="mt-6 text-center">
             <p className="text-gray-400">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 type="button"
                 onClick={toggleMode}
@@ -268,13 +269,15 @@ function LoginPageContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <BackgroundContainer className="min-h-screen" innerClassName="overflow-auto">
-        <div className="flex items-center justify-center h-full">
-          <div className="text-gray-300">Loading...</div>
-        </div>
-      </BackgroundContainer>
-    }>
+    <Suspense
+      fallback={
+        <BackgroundContainer className="min-h-screen" innerClassName="overflow-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-300">Loading...</div>
+          </div>
+        </BackgroundContainer>
+      }
+    >
       <LoginPageContent />
     </Suspense>
   );

@@ -8,7 +8,16 @@ import { getUserInfo } from '@/lib/api/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FileText, Briefcase, ChevronRight, Loader2, User, Calendar, ArrowLeft, GitCompare } from 'lucide-react';
+import {
+  FileText,
+  Briefcase,
+  ChevronRight,
+  Loader2,
+  User,
+  Calendar,
+  ArrowLeft,
+  GitCompare,
+} from 'lucide-react';
 
 interface ProcessedData {
   personal_data?: any;
@@ -105,12 +114,15 @@ export default function PrecheckPage() {
     try {
       const { improveResume } = await import('@/lib/api/resume');
       const preview = await improveResume(resumeId, jobId);
-      
+
       // Store in sessionStorage for dashboard to access
-      sessionStorage.setItem('resumeMatcher:selectedJobAnalysis', JSON.stringify({
-        data: preview.data
-      }));
-      
+      sessionStorage.setItem(
+        'resumeMatcher:selectedJobAnalysis',
+        JSON.stringify({
+          data: preview.data,
+        })
+      );
+
       // Navigate to dashboard
       router.push('/dashboard');
     } catch (err) {
@@ -121,16 +133,14 @@ export default function PrecheckPage() {
   };
 
   const toggleJobSelection = (jobId: string) => {
-    setSelectedJobIds(prev => 
-      prev.includes(jobId) 
-        ? prev.filter(id => id !== jobId)
-        : [...prev, jobId]
+    setSelectedJobIds((prev) =>
+      prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]
     );
   };
 
   const handleCompareMultiple = () => {
     if (!selectedResumeId || selectedJobIds.length === 0) return;
-    
+
     const jobIdsParam = selectedJobIds.join(',');
     router.push(`/compare?resume_id=${selectedResumeId}&job_ids=${jobIdsParam}`);
   };
@@ -188,7 +198,9 @@ export default function PrecheckPage() {
                   <User className="h-4 w-4" />
                   <span>Welcome back, {userName}</span>
                 </div>
-                <h1 className="text-4xl font-bold mb-2 text-white">Your Resumes & Job Applications</h1>
+                <h1 className="text-4xl font-bold mb-2 text-white">
+                  Your Resumes & Job Applications
+                </h1>
                 <p className="text-gray-400">
                   Select a resume to view associated job applications and compare matches.
                 </p>
@@ -216,9 +228,7 @@ export default function PrecheckPage() {
               <CardContent className="py-12 text-center">
                 <FileText className="h-12 w-12 mx-auto mb-4 text-gray-500" />
                 <h3 className="text-lg font-semibold mb-2 text-white">No Resumes Found</h3>
-                <p className="text-gray-400 mb-4">
-                  You haven't uploaded any resumes yet.
-                </p>
+                <p className="text-gray-400 mb-4">You haven't uploaded any resumes yet.</p>
                 <Button onClick={() => router.push('/resume')}>Upload Your First Resume</Button>
               </CardContent>
             </Card>
@@ -247,9 +257,7 @@ export default function PrecheckPage() {
                             Uploaded: {formatDate(resume.raw_resume.created_at)}
                           </span>
                           {resume.processed_resume?.processed_at && (
-                            <span className="text-green-400">
-                              ✓ Processed
-                            </span>
+                            <span className="text-green-400">✓ Processed</span>
                           )}
                         </CardDescription>
                       </div>
@@ -261,97 +269,99 @@ export default function PrecheckPage() {
                     </div>
                   </CardHeader>
 
-                {selectedResumeId === resume.resume_id && (
-                  <CardContent className="pt-0">
-                    <div className="border-t border-gray-800 pt-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-semibold flex items-center gap-2 text-white">
-                          <Briefcase className="h-4 w-4" />
-                          Associated Job Applications ({jobs.length})
-                        </h4>
-                        {selectedJobIds.length >= 2 && (
-                          <Button
-                            onClick={handleCompareMultiple}
-                            size="sm"
-                            className="bg-purple-600 hover:bg-purple-700"
-                          >
-                            <GitCompare className="h-4 w-4 mr-2" />
-                            Compare {selectedJobIds.length} Jobs
-                          </Button>
+                  {selectedResumeId === resume.resume_id && (
+                    <CardContent className="pt-0">
+                      <div className="border-t border-gray-800 pt-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2 text-white">
+                            <Briefcase className="h-4 w-4" />
+                            Associated Job Applications ({jobs.length})
+                          </h4>
+                          {selectedJobIds.length >= 2 && (
+                            <Button
+                              onClick={handleCompareMultiple}
+                              size="sm"
+                              className="bg-purple-600 hover:bg-purple-700"
+                            >
+                              <GitCompare className="h-4 w-4 mr-2" />
+                              Compare {selectedJobIds.length} Jobs
+                            </Button>
+                          )}
+                        </div>
+
+                        {loadingJobs ? (
+                          <div className="text-center py-8">
+                            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-400" />
+                            <p className="text-sm text-gray-400">Loading jobs...</p>
+                          </div>
+                        ) : jobs.length === 0 ? (
+                          <div className="text-center py-8 text-gray-400">
+                            <Briefcase className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No job applications found for this resume.</p>
+                          </div>
+                        ) : (
+                          <>
+                            {jobs.length >= 2 && (
+                              <div className="mb-3 text-xs text-gray-500">
+                                Select multiple jobs to compare them side-by-side
+                              </div>
+                            )}
+                            <div className="space-y-3">
+                              {jobs.map((job) => (
+                                <div
+                                  key={job.job_id}
+                                  className={`flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors ${
+                                    selectedJobIds.includes(job.job_id)
+                                      ? 'ring-2 ring-blue-500'
+                                      : ''
+                                  }`}
+                                >
+                                  {jobs.length >= 2 && (
+                                    <Checkbox
+                                      checked={selectedJobIds.includes(job.job_id)}
+                                      onCheckedChange={() => toggleJobSelection(job.job_id)}
+                                      className="border-gray-600"
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-white">
+                                      {job.processed_job?.job_title || 'Job Position'}
+                                    </p>
+                                    <p className="text-sm text-gray-400 line-clamp-1">
+                                      {job.processed_job?.job_summary || 'Job description...'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      Applied: {formatDate(job.raw_job.created_at)}
+                                    </p>
+                                  </div>
+                                  <Button
+                                    onClick={() => handleCompareClick(resume.resume_id, job.job_id)}
+                                    size="sm"
+                                    variant="outline"
+                                    className="shrink-0"
+                                    disabled={comparingJobId === job.job_id}
+                                  >
+                                    {comparingJobId === job.job_id ? (
+                                      <>
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        Loading...
+                                      </>
+                                    ) : (
+                                      'View Match'
+                                    )}
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
-
-                      {loadingJobs ? (
-                        <div className="text-center py-8">
-                          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-400" />
-                          <p className="text-sm text-gray-400">Loading jobs...</p>
-                        </div>
-                      ) : jobs.length === 0 ? (
-                        <div className="text-center py-8 text-gray-400">
-                          <Briefcase className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No job applications found for this resume.</p>
-                        </div>
-                      ) : (
-                        <>
-                          {jobs.length >= 2 && (
-                            <div className="mb-3 text-xs text-gray-500">
-                              Select multiple jobs to compare them side-by-side
-                            </div>
-                          )}
-                          <div className="space-y-3">
-                            {jobs.map((job) => (
-                              <div
-                                key={job.job_id}
-                                className={`flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors ${
-                                  selectedJobIds.includes(job.job_id) ? 'ring-2 ring-blue-500' : ''
-                                }`}
-                              >
-                                {jobs.length >= 2 && (
-                                  <Checkbox
-                                    checked={selectedJobIds.includes(job.job_id)}
-                                    onCheckedChange={() => toggleJobSelection(job.job_id)}
-                                    className="border-gray-600"
-                                  />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-white">
-                                    {job.processed_job?.job_title || 'Job Position'}
-                                  </p>
-                                  <p className="text-sm text-gray-400 line-clamp-1">
-                                    {job.processed_job?.job_summary || 'Job description...'}
-                                  </p>
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    Applied: {formatDate(job.raw_job.created_at)}
-                                  </p>
-                                </div>
-                                <Button
-                                  onClick={() => handleCompareClick(resume.resume_id, job.job_id)}
-                                  size="sm"
-                                  variant="outline"
-                                  className="shrink-0"
-                                  disabled={comparingJobId === job.job_id}
-                                >
-                                  {comparingJobId === job.job_id ? (
-                                    <>
-                                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                      Loading...
-                                    </>
-                                  ) : (
-                                    'View Match'
-                                  )}
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
+                    </CardContent>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </BackgroundContainer>

@@ -16,7 +16,7 @@ export default function UserMenu(): React.ReactElement {
     async function loadUser() {
       const userInfo = getUserInfo();
       const token = getAuthToken();
-      
+
       if (userInfo && token) {
         // Verify token is still valid
         try {
@@ -77,7 +77,7 @@ export default function UserMenu(): React.ReactElement {
         <span className="font-semibold">{displayName}</span>
         <ChevronDown className="h-4 w-4" />
       </button>
-      
+
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={handleClose} aria-hidden="true" />
@@ -145,9 +145,7 @@ export default function UserMenu(): React.ReactElement {
             {/* Footer Note */}
             {isGuest && (
               <div className="border-t border-gray-800 p-3">
-                <p className="text-xs text-gray-500 text-center">
-                  Login to save your progress
-                </p>
+                <p className="text-xs text-gray-500 text-center">Login to save your progress</p>
               </div>
             )}
           </div>

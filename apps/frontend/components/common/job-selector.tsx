@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { fetchJobsForResume, fetchAllJobsForUser } from '@/lib/api/resume';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Briefcase, Loader2 } from 'lucide-react';
 
 interface JobSelectorProps {
@@ -14,7 +20,13 @@ interface JobSelectorProps {
   fetchAllUserJobs?: boolean; // New prop to determine whether to fetch all user jobs
 }
 
-export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excludeJobIds = [], fetchAllUserJobs = false }: JobSelectorProps) {
+export default function JobSelector({
+  resumeId,
+  onJobSelect,
+  selectedJobId,
+  excludeJobIds = [],
+  fetchAllUserJobs = false,
+}: JobSelectorProps) {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +39,8 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
     try {
       setLoading(true);
       setError(null);
-      
-      let data;
+
+      let data: any[];
       if (fetchAllUserJobs) {
         // Fetch all jobs for the user
         data = await fetchAllJobsForUser();
@@ -38,9 +50,9 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
       } else {
         data = [];
       }
-      
+
       setJobs(data);
-      
+
       // Auto-select if only one job exists
       if (data.length === 1 && !selectedJobId) {
         onJobSelect(data[0].job_id, data[0]);
@@ -54,7 +66,7 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
   };
 
   const handleJobChange = (jobId: string) => {
-    const job = jobs.find(j => j.job_id === jobId);
+    const job = jobs.find((j) => j.job_id === jobId);
     if (job) {
       onJobSelect(jobId, job);
     }
@@ -63,9 +75,10 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
   const getJobLabel = (job: any) => {
     const processedJob = job.processed_job;
     const title = processedJob?.job_title || 'Untitled Job';
-    const company = processedJob?.company_profile?.company_name || processedJob?.company_profile || '';
+    const company =
+      processedJob?.company_profile?.company_name || processedJob?.company_profile || '';
     const date = new Date(job.raw_job.created_at).toLocaleDateString();
-    
+
     if (company) {
       return `${title} at ${company} - ${date}`;
     }
@@ -98,7 +111,7 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
     return (
       <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
         <p className="text-gray-300">
-          {fetchAllUserJobs 
+          {fetchAllUserJobs
             ? 'No jobs found. Upload a job description below.'
             : 'No jobs found for this resume. Upload a job description below.'}
         </p>
@@ -107,7 +120,7 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
   }
 
   // Filter out jobs that are already selected in other tabs
-  const availableJobs = jobs.filter(j => !excludeJobIds.includes(j.job_id));
+  const availableJobs = jobs.filter((j) => !excludeJobIds.includes(j.job_id));
 
   if (availableJobs.length === 0) {
     return (
@@ -120,8 +133,9 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
   const getJobDisplayText = (job: any) => {
     const processedJob = job.processed_job;
     const title = processedJob?.job_title || 'Untitled Job';
-    const company = processedJob?.company_profile?.company_name || processedJob?.company_profile || '';
-    
+    const company =
+      processedJob?.company_profile?.company_name || processedJob?.company_profile || '';
+
     if (company) {
       return `${title} at ${company}`;
     }
@@ -134,29 +148,31 @@ export default function JobSelector({ resumeId, onJobSelect, selectedJobId, excl
         <Briefcase className="h-4 w-4" />
         Select a Job Description
       </label>
-      
+
       {/* Show currently selected job */}
       {selectedJobId && (
         <div className="p-3 bg-blue-900/20 border border-blue-700/50 rounded-md">
           <p className="text-xs text-blue-300 mb-1">Currently Selected:</p>
           <p className="text-sm text-white font-medium">
-            {getJobDisplayText(jobs.find(j => j.job_id === selectedJobId))}
+            {getJobDisplayText(jobs.find((j) => j.job_id === selectedJobId))}
           </p>
         </div>
       )}
-      
+
       <Select value={selectedJobId} onValueChange={handleJobChange}>
         <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white">
-          <SelectValue placeholder={
-            fetchAllUserJobs 
-              ? "Choose from your uploaded jobs..." 
-              : "Choose from jobs associated with this resume..."
-          } />
+          <SelectValue
+            placeholder={
+              fetchAllUserJobs
+                ? 'Choose from your uploaded jobs...'
+                : 'Choose from jobs associated with this resume...'
+            }
+          />
         </SelectTrigger>
         <SelectContent className="bg-gray-800 border-gray-700">
           {availableJobs.map((job) => (
-            <SelectItem 
-              key={job.job_id} 
+            <SelectItem
+              key={job.job_id}
               value={job.job_id}
               className="text-gray-200 hover:bg-gray-700"
             >

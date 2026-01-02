@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { fetchMyResumes } from '@/lib/api/resume';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { FileText, Loader2 } from 'lucide-react';
 
 interface ResumeSelectorProps {
@@ -35,7 +41,7 @@ export default function ResumeSelector({ onResumeSelect, selectedResumeId }: Res
   };
 
   const handleResumeChange = (resumeId: string) => {
-    const resume = resumes.find(r => r.resume_id === resumeId);
+    const resume = resumes.find((r) => r.resume_id === resumeId);
     if (resume) {
       onResumeSelect(resumeId, resume);
     }
@@ -87,25 +93,25 @@ export default function ResumeSelector({ onResumeSelect, selectedResumeId }: Res
         <FileText className="h-4 w-4" />
         Select a Resume
       </label>
-      
+
       {/* Show currently selected resume */}
       {selectedResumeId && (
         <div className="p-3 bg-blue-900/20 border border-blue-700/50 rounded-md">
           <p className="text-xs text-blue-300 mb-1">Currently Selected:</p>
           <p className="text-sm text-white font-medium">
-            {getResumeDisplayText(resumes.find(r => r.resume_id === selectedResumeId))}
+            {getResumeDisplayText(resumes.find((r) => r.resume_id === selectedResumeId))}
           </p>
         </div>
       )}
-      
+
       <Select value={selectedResumeId} onValueChange={handleResumeChange}>
         <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white">
           <SelectValue placeholder="Choose from your uploaded resumes..." />
         </SelectTrigger>
         <SelectContent className="bg-gray-800 border-gray-700">
           {resumes.map((resume) => (
-            <SelectItem 
-              key={resume.resume_id} 
+            <SelectItem
+              key={resume.resume_id}
               value={resume.resume_id}
               className="text-gray-200 hover:bg-gray-700"
             >

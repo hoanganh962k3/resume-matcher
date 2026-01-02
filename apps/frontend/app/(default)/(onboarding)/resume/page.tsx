@@ -31,7 +31,7 @@ export default function UploadResume() {
   const handleResumeSelect = (resumeId: string, resumeData: any) => {
     console.log('Resume selected:', resumeId);
     setSelectedResumeId(resumeId);
-    
+
     // Transform the API response to match the format expected by ResumePreview
     if (resumeData?.processed_resume) {
       const processed = resumeData.processed_resume;
@@ -48,7 +48,7 @@ export default function UploadResume() {
       console.warn('No processed_resume data available for selected resume');
       setUploadedResumeData(null);
     }
-    
+
     // Store in localStorage for use in other pages
     try {
       localStorage.setItem('resumeMatcher:lastResumeId', resumeId);
@@ -110,7 +110,7 @@ export default function UploadResume() {
         {/* Resume Selector - Only show for logged in users */}
         {user && (
           <div className="w-full mb-6">
-            <ResumeSelector 
+            <ResumeSelector
               onResumeSelect={handleResumeSelect}
               selectedResumeId={selectedResumeId}
             />

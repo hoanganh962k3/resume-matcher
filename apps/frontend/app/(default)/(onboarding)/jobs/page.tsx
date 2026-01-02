@@ -36,7 +36,7 @@ function JobDescriptionsContent() {
   const handleJobSelect = (jobId: string, jobData: any) => {
     console.log('Job selected:', jobId, jobData);
     setSelectedJobId(jobId);
-    
+
     // Transform the API response to the format expected by JobPreview
     // The jobData from the API has structure: { job_id, raw_job, processed_job }
     if (jobData?.processed_job) {
@@ -48,7 +48,7 @@ function JobDescriptionsContent() {
       console.warn('No processed_job data available for selected job');
       setSelectedJobData(null);
     }
-    
+
     // Store in localStorage for use in other pages
     try {
       localStorage.setItem('resumeMatcher:lastJobId', jobId);
@@ -71,7 +71,7 @@ function JobDescriptionsContent() {
           </Button>
           <UserMenu />
         </div>
-        
+
         <div className="flex flex-col items-center text-center gap-6">
           <h1 className="text-5xl sm:text-6xl font-bold text-white">Manage Job Descriptions</h1>
           <p className="text-gray-300 text-lg sm:text-xl max-w-2xl">
@@ -82,7 +82,7 @@ function JobDescriptionsContent() {
         {/* Job Selector - Only show for logged in users */}
         {user && (
           <div className="w-full mb-6 max-w-3xl mx-auto">
-            <JobSelector 
+            <JobSelector
               fetchAllUserJobs={true}
               onJobSelect={handleJobSelect}
               selectedJobId={selectedJobId}
@@ -111,7 +111,7 @@ function JobDescriptionsContent() {
 
         <div className="flex justify-center">
           <Suspense fallback={<div className="text-gray-300">Loading input...</div>}>
-            <JobDescriptionUploadTextArea 
+            <JobDescriptionUploadTextArea
               selectedJobId={selectedJobId}
               selectedJobData={selectedJobData}
               onUsedJobsChange={handleUsedJobsChange}
@@ -125,11 +125,13 @@ function JobDescriptionsContent() {
 
 export default function ProvideJobDescriptionsPage() {
   return (
-    <Suspense fallback={
-      <BackgroundContainer innerClassName="items-center justify-center">
-        <div className="text-gray-300">Loading...</div>
-      </BackgroundContainer>
-    }>
+    <Suspense
+      fallback={
+        <BackgroundContainer innerClassName="items-center justify-center">
+          <div className="text-gray-300">Loading...</div>
+        </BackgroundContainer>
+      }
+    >
       <JobDescriptionsContent />
     </Suspense>
   );

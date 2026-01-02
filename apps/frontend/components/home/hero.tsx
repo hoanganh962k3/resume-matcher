@@ -11,12 +11,12 @@ export default function Hero() {
       try {
         // Clear session storage (temporary comparison/dashboard data)
         sessionStorage.clear();
-        
+
         // Clear workflow-specific localStorage (resume and job data for fresh start)
         localStorage.removeItem('resumeMatcher:lastResumeId');
         localStorage.removeItem('resumeMatcher:lastResumeName');
         localStorage.removeItem('resumeMatcher:savedJobs');
-        
+
         console.log('Workflow data cleared - starting fresh from home');
       } catch (err) {
         console.warn('Failed to clear storage:', err);

@@ -81,7 +81,7 @@ export async function getCurrentUser(token: string): Promise<UserResponse> {
   const response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -194,11 +194,11 @@ export function useAuth() {
   useEffect(() => {
     const token = getAuthToken();
     const storedUser = getUserInfo();
-    
+
     if (token && storedUser) {
       setUser(storedUser);
     }
-    
+
     setLoading(false);
   }, []);
 
