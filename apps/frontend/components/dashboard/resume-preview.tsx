@@ -1,13 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+interface PersonalInfo {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  location?: {
+    city?: string;
+    country?: string;
+  };
+}
+
+interface WorkExperience {
+  jobTitle?: string;
+  position?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  responsibilities?: string[];
+}
+
+interface Education {
+  degree?: string;
+  institution?: string;
+  graduationDate?: string;
+  gpa?: string;
+}
+
+interface Additional {
+  skills?: Array<{ skillName?: string } | string>;
+}
+
+interface ResumeData {
+  personalInfo?: PersonalInfo;
+  workExperience?: WorkExperience[];
+  education?: Education[];
+  additional?: Additional;
+}
 
 interface ResumePreviewProps {
-  resumeData: any;
+  resumeData: ResumeData | null | undefined;
 }
 
 export default function ResumePreview({ resumeData }: ResumePreviewProps) {
-  const [expandedExperience, setExpandedExperience] = useState<Record<number, boolean>>({});
-  const [showAllSkills, setShowAllSkills] = useState(false);
-
   if (!resumeData) {
     return (
       <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-600">
@@ -44,7 +80,7 @@ export default function ResumePreview({ resumeData }: ResumePreviewProps) {
           <div className="pt-4 border-t border-gray-600">
             <strong className="text-white block mb-2">Experience:</strong>
             <div className="space-y-3">
-              {workExperience.map((exp: any, index: number) => (
+              {workExperience.map((exp, index) => (
                 <div key={index} className="text-sm">
                   <p className="font-medium text-white">{exp.jobTitle || exp.position}</p>
                   <p className="text-gray-400">
@@ -55,7 +91,7 @@ export default function ResumePreview({ resumeData }: ResumePreviewProps) {
                   </p>
                   {exp.responsibilities && (
                     <ul className="list-disc list-inside mt-1 text-gray-300 space-y-1">
-                      {exp.responsibilities.slice(0, 2).map((resp: string, i: number) => (
+                      {exp.responsibilities.slice(0, 2).map((resp, i) => (
                         <li key={i} className="text-xs">
                           {resp}
                         </li>
@@ -78,7 +114,7 @@ export default function ResumePreview({ resumeData }: ResumePreviewProps) {
           <div className="pt-4 border-t border-gray-600">
             <strong className="text-white block mb-2">Education:</strong>
             <div className="space-y-3">
-              {education.map((edu: any, index: number) => (
+              {education.map((edu, index) => (
                 <div key={index} className="text-sm">
                   <p className="font-medium text-white">{edu.degree}</p>
                   <p className="text-gray-400">{edu.institution}</p>
@@ -97,14 +133,17 @@ export default function ResumePreview({ resumeData }: ResumePreviewProps) {
           <div className="pt-4 border-t border-gray-600">
             <strong className="text-white">Skills:</strong>
             <div className="flex flex-wrap gap-2 mt-2">
-              {additional.skills.slice(0, 10).map((skill: any, index: number) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-blue-600/20 text-blue-300 rounded text-sm"
-                >
-                  {skill.skillName || skill}
-                </span>
-              ))}
+              {additional.skills.slice(0, 10).map((skill, index) => {
+                const skillName = typeof skill === 'string' ? skill : skill.skillName || '';
+                return (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-blue-600/20 text-blue-300 rounded text-sm"
+                  >
+                    {skillName}
+                  </span>
+                );
+              })}
               {additional.skills.length > 10 && (
                 <span className="px-2 py-1 text-gray-400 text-sm">
                   +{additional.skills.length - 10} more

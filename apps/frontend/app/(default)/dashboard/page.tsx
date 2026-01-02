@@ -17,7 +17,6 @@ import {
   XCircle,
   AlertTriangle,
   Info,
-  Calendar,
   ArrowLeft,
 } from 'lucide-react';
 
@@ -195,7 +194,7 @@ export default function DashboardPage() {
     return (
       <BackgroundContainer className="min-h-screen" innerClassName="bg-zinc-950">
         <div className="flex items-center justify-center h-full p-6 text-gray-400">
-          No improved resume found. Please click "Improve" on the Job Upload page first.
+          No improved resume found. Please click &quot;Improve&quot; on the Job Upload page first.
         </div>
       </BackgroundContainer>
     );

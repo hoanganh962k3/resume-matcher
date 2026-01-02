@@ -13,8 +13,8 @@ from app.schemas.pydantic import LearningScheduleModel, LearningScheduleRequest
 from .exceptions import (
     ResumeNotFoundError,
     JobNotFoundError,
-    LearningScheduleGenerationError,
 )
+from .exceptions import LearningScheduleGenerationError
 
 logger = logging.getLogger(__name__)
 

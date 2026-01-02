@@ -31,9 +31,10 @@ The easiest way to get started is using our automated setup scripts:
 
 #### **Windows (PowerShell)**
 ```powershell
+
 # Clone the repository
-git clone https://github.com/srbhr/Resume-Matcher.git
-cd Resume-Matcher
+git clone https://github.com/hoanganh962k3/resume-matcher.git
+cd resume-matcher
 
 # Run automated setup (installs dependencies, configures environment)
 .\setup.ps1

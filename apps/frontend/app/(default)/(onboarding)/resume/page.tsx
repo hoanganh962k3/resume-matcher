@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import BackgroundContainer from '@/components/common/background-container';
 import FileUpload from '@/components/common/file-upload';
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/lib/api/auth';
 
-export default function UploadResume() {
+function UploadResumeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -158,5 +158,19 @@ export default function UploadResume() {
         )}
       </div>
     </BackgroundContainer>
+  );
+}
+
+export default function UploadResume() {
+  return (
+    <Suspense
+      fallback={
+        <BackgroundContainer innerClassName="justify-center">
+          <div className="text-gray-300">Loading...</div>
+        </BackgroundContainer>
+      }
+    >
+      <UploadResumeContent />
+    </Suspense>
   );
 }

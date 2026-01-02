@@ -249,7 +249,7 @@ function LoginPageContent() {
           {/* Guest Access Note */}
           <div className="mt-6 pt-6 border-t border-gray-800">
             <p className="text-gray-500 text-sm text-center">
-              You can also continue as a guest, but your data won't be saved.
+              You can also continue as a guest, but your data won&apos;t be saved.
             </p>
             <div className="mt-3 text-center">
               <button

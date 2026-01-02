@@ -228,7 +228,7 @@ export default function PrecheckPage() {
               <CardContent className="py-12 text-center">
                 <FileText className="h-12 w-12 mx-auto mb-4 text-gray-500" />
                 <h3 className="text-lg font-semibold mb-2 text-white">No Resumes Found</h3>
-                <p className="text-gray-400 mb-4">You haven't uploaded any resumes yet.</p>
+                <p className="text-gray-400 mb-4">You haven&apos;t uploaded any resumes yet.</p>
                 <Button onClick={() => router.push('/resume')}>Upload Your First Resume</Button>
               </CardContent>
             </Card>

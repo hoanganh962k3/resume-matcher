@@ -11,7 +11,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError as JWTInvalidTokenError
 
 from app.core.config import settings
-from app.core.exceptions import ResumeMatcherException
+from app.services.exceptions import AuthenticationError, UserAlreadyExistsError, InvalidTokenError
 from app.models.user import User
 from app.schemas.pydantic.auth import (
     TokenData,
@@ -19,20 +19,6 @@ from app.schemas.pydantic.auth import (
     UserRegister,
 )
 
-
-class AuthenticationError(ResumeMatcherException):
-    """Raised when authentication fails"""
-    pass
-
-
-class UserAlreadyExistsError(ResumeMatcherException):
-    """Raised when attempting to register with an existing email"""
-    pass
-
-
-class InvalidTokenError(ResumeMatcherException):
-    """Raised when JWT token is invalid or expired"""
-    pass
 
 
 class AuthService:

@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from .api import health_check, v1_router, RequestIDMiddleware
+from .api import v1_router, RequestIDMiddleware
 from .core import (
     settings,
     async_engine,
@@ -63,7 +63,6 @@ def create_app() -> FastAPI:
             name=settings.PROJECT_NAME,
         )
 
-    app.include_router(health_check)
     app.include_router(v1_router)
 
     return app

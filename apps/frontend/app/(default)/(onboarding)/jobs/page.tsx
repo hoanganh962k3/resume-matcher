@@ -13,7 +13,7 @@ import { useAuth } from '@/lib/api/auth';
 function JobDescriptionsContent() {
   const router = useRouter();
   const { user } = useAuth();
-  const [resumeId, setResumeId] = useState<string | null>(null);
+  const [_resumeId, setResumeId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
   const [selectedJobData, setSelectedJobData] = useState<any>(null);
   const [usedJobIds, setUsedJobIds] = useState<string[]>([]);

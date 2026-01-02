@@ -1,3 +1,26 @@
+# Learning schedule related exception
+class LearningScheduleGenerationError(Exception):
+    """
+    Exception raised when learning schedule generation fails.
+    """
+    def __init__(self, message: str = None):
+        if not message:
+            message = "Failed to generate learning schedule."
+        super().__init__(message)
+from app.core.exceptions import ResumeMatcherException
+
+# Auth-related exceptions
+class AuthenticationError(ResumeMatcherException):
+    """Raised when authentication fails"""
+    pass
+
+class UserAlreadyExistsError(ResumeMatcherException):
+    """Raised when attempting to register with an existing email"""
+    pass
+
+class InvalidTokenError(ResumeMatcherException):
+    """Raised when JWT token is invalid or expired"""
+    pass
 from typing import Optional
 
 

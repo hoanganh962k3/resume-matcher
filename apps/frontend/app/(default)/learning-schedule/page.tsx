@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import BackgroundContainer from '@/components/common/background-container';
 import LearningScheduleDisplay from '@/components/learning-schedule/learning-schedule-display';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { generateLearningSchedule, LearningSchedule, ScheduleType } from '@/lib/api/schedule';
 import { ArrowLeft, Calendar, Clock, Loader2 } from 'lucide-react';
 
-export default function LearningSchedulePage() {
+function LearningScheduleContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [scheduleData, setScheduleData] = useState<LearningSchedule | null>(null);
@@ -236,5 +236,19 @@ export default function LearningSchedulePage() {
         </div>
       </div>
     </BackgroundContainer>
+  );
+}
+
+export default function LearningSchedulePage() {
+  return (
+    <Suspense
+      fallback={
+        <BackgroundContainer innerClassName="justify-center">
+          <div className="text-gray-300">Loading...</div>
+        </BackgroundContainer>
+      }
+    >
+      <LearningScheduleContent />
+    </Suspense>
   );
 }
