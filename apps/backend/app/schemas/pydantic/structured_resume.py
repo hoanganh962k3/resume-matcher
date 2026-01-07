@@ -10,6 +10,7 @@ class Location(BaseModel):
 class PersonalData(BaseModel):
     firstName: str = Field(..., alias="firstName")
     lastName: Optional[str] = Field(..., alias="lastName")
+    title: Optional[str] = None
     email: str
     phone: str
     linkedin: Optional[str] = None

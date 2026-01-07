@@ -49,9 +49,16 @@ export default function ResumeSelector({ onResumeSelect, selectedResumeId }: Res
 
   const getResumeLabel = (resume: any) => {
     const personalData = resume.processed_resume?.personal_data;
-    const name = personalData?.name || 'Unnamed Resume';
+    const name = personalData?.name || 
+                 personalData?.full_name || 
+                 (personalData?.firstName && personalData?.lastName 
+                   ? `${personalData.firstName} ${personalData.lastName}` 
+                   : personalData?.firstName) || 
+                 'Unnamed Resume';
+    const title = personalData?.title;
+    const nameWithTitle = title ? `${name} (${title})` : name;
     const date = new Date(resume.raw_resume.created_at).toLocaleDateString();
-    return `${name} - ${date}`;
+    return `${nameWithTitle} - ${date}`;
   };
 
   if (loading) {
@@ -84,7 +91,14 @@ export default function ResumeSelector({ onResumeSelect, selectedResumeId }: Res
 
   const getResumeDisplayText = (resume: any) => {
     const personalData = resume.processed_resume?.personal_data;
-    return personalData?.name || 'Unnamed Resume';
+    const name = personalData?.name || 
+           personalData?.full_name || 
+           (personalData?.firstName && personalData?.lastName 
+             ? `${personalData.firstName} ${personalData.lastName}` 
+             : personalData?.firstName) || 
+           'Unnamed Resume';
+    const title = personalData?.title;
+    return title ? `${name} (${title})` : name;
   };
 
   return (

@@ -2,6 +2,7 @@ PROMPT = """
 You are a JSON extraction engine. Convert the following resume text into precisely the JSON schema specified below.
 - Map each resume section to the schema without inventing information.
 - If a field is missing in the source text, use an empty string or empty list as appropriate.
+- For the "title" field in Personal Data: extract the professional title/role if explicitly stated in the resume (e.g., "Software Engineer", "Data Scientist"). If no title is present, set it to null.
 - Preserve bullet points in the `description` arrays using short factual sentences.
 - Use "Present" if an end date is ongoing and prefer YYYY-MM-DD where dates are available.
 - Keep the `additional` section organised: list technical skills, languages, certifications/training, and awards exactly as they appear.

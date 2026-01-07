@@ -149,6 +149,10 @@ export default function PrecheckPage() {
     const personalData = resume.processed_resume?.personal_data;
     if (personalData?.name) return personalData.name;
     if (personalData?.full_name) return personalData.full_name;
+    if (personalData?.firstName && personalData?.lastName) {
+      return `${personalData.firstName} ${personalData.lastName}`;
+    }
+    if (personalData?.firstName) return personalData.firstName;
     return 'Unnamed Resume';
   };
 
@@ -337,8 +341,7 @@ export default function PrecheckPage() {
                                   <Button
                                     onClick={() => handleCompareClick(resume.resume_id, job.job_id)}
                                     size="sm"
-                                    variant="outline"
-                                    className="shrink-0"
+                                    className="shrink-0 bg-blue-600 hover:bg-blue-700"
                                     disabled={comparingJobId === job.job_id}
                                   >
                                     {comparingJobId === job.job_id ? (

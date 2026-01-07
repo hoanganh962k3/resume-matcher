@@ -97,12 +97,17 @@ export default function FileUpload({ onResumeProcessed }: FileUploadProps = {}) 
             if (data?.data?.processed_resume) {
               const processed = data.data.processed_resume;
               console.log('Processed resume data:', processed);
+              // Pass the structured resume format directly
               const resumeData = {
-                personalInfo: processed.personal_data || undefined,
-                workExperience: processed.experiences || [],
-                education: processed.education || [],
-                personalProjects: processed.projects || [],
-                additional: processed.skills || undefined,
+                UUID: processed.UUID,
+                'Personal Data': processed.personal_data,
+                Experiences: processed.experiences,
+                Projects: processed.projects,
+                Skills: processed.skills,
+                'Research Work': processed.research_work,
+                Achievements: processed.achievements,
+                Education: processed.education,
+                'Extracted Keywords': processed.extracted_keywords,
               };
               console.log('Formatted resume data:', resumeData);
               onResumeProcessed(resumeData);

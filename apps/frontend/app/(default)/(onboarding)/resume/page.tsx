@@ -32,15 +32,19 @@ function UploadResumeContent() {
     console.log('Resume selected:', resumeId);
     setSelectedResumeId(resumeId);
 
-    // Transform the API response to match the format expected by ResumePreview
+    // Transform the API response to match the structured_resume format
     if (resumeData?.processed_resume) {
       const processed = resumeData.processed_resume;
       const formattedData = {
-        personalInfo: processed.personal_data || undefined,
-        workExperience: processed.experiences || [],
-        education: processed.education || [],
-        personalProjects: processed.projects || [],
-        additional: processed.skills || undefined,
+        UUID: processed.UUID,
+        'Personal Data': processed.personal_data,
+        Experiences: processed.experiences,
+        Projects: processed.projects,
+        Skills: processed.skills,
+        'Research Work': processed.research_work,
+        Achievements: processed.achievements,
+        Education: processed.education,
+        'Extracted Keywords': processed.extracted_keywords,
       };
       console.log('Formatted resume data for preview:', formattedData);
       setUploadedResumeData(formattedData);

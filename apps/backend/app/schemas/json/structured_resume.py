@@ -3,6 +3,7 @@ SCHEMA = {
     "Personal Data": {
         "firstName": "string",
         "lastName": "string",
+        "title": "string | null",
         "email": "string",
         "phone": "string",
         "linkedin": "string",
