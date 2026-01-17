@@ -133,9 +133,17 @@ export default function PrecheckPage() {
   };
 
   const toggleJobSelection = (jobId: string) => {
-    setSelectedJobIds((prev) =>
-      prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]
-    );
+    setSelectedJobIds((prev) => {
+      if (prev.includes(jobId)) {
+        // Remove the job if already selected
+        return prev.filter((id) => id !== jobId);
+      } else if (prev.length < 3) {
+        // Add the job only if less than 3 jobs are selected
+        return [...prev, jobId];
+      }
+      // Don't add if 3 jobs are already selected
+      return prev;
+    });
   };
 
   const handleCompareMultiple = () => {
@@ -307,7 +315,12 @@ export default function PrecheckPage() {
                           <>
                             {jobs.length >= 2 && (
                               <div className="mb-3 text-xs text-gray-500">
-                                Select multiple jobs to compare them side-by-side
+                                Select multiple jobs to compare them side-by-side (maximum 3 jobs)
+                                {selectedJobIds.length > 0 && (
+                                  <span className="ml-2 text-blue-400">
+                                    {selectedJobIds.length}/3 selected
+                                  </span>
+                                )}
                               </div>
                             )}
                             <div className="space-y-3">
@@ -324,6 +337,7 @@ export default function PrecheckPage() {
                                     <Checkbox
                                       checked={selectedJobIds.includes(job.job_id)}
                                       onCheckedChange={() => toggleJobSelection(job.job_id)}
+                                      disabled={!selectedJobIds.includes(job.job_id) && selectedJobIds.length >= 3}
                                       className="border-gray-600"
                                     />
                                   )}

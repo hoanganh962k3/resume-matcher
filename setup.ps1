@@ -35,9 +35,6 @@ Windows Requirements:
 
 For Linux/macOS systems:
   - Use ./setup.sh instead of this script
-
-Note: AI model serving (Ollama) is optional and can be configured
-via environment variables. The default uses OpenAI API.
 "@
     exit 0
 }
@@ -288,15 +285,11 @@ if ($StartDev) {
     }
 } else {
     Write-Success @"
- Setup complete!
+🎉 Setup complete!
 
 Next steps:
-   Run 'npm run dev' to start in development mode.
-   Run 'npm run build' for production.
-   See SETUP.md for more details.
-
-Note: The default configuration uses OpenAI API for AI features.
-To use local AI models via Ollama, install it separately and
-configure LLM_PROVIDER=ollama in apps/backend/.env
+  • Run 'npm run dev' to start in development mode.
+  • Run 'npm run build' for production.
+  • See SETUP.md for more details.
 "@
 }
