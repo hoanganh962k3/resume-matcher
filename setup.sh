@@ -56,6 +56,51 @@ info()    { echo -e "ℹ  $*"; }
 success() { echo -e "✅ $*"; }
 error()   { echo -e "❌ $*" >&2; exit 1; }
 
+#–– Prompt for LLM API key ––#
+prompt_llm_api_key() {
+  local env_file="$1"
+  
+  echo ""
+  echo "============================================"
+  echo "   OpenAI API Key Configuration"
+  echo "============================================"
+  echo ""
+  echo "To use AI features, you need an OpenAI API key."
+  echo "Get your API key at: https://platform.openai.com/api-keys"
+  echo ""
+  
+  read -p "Enter your OpenAI API key (or press Enter to skip): " api_key
+  
+  if [[ -n "$api_key" ]]; then
+    # Update or add the LLM_API_KEY
+    if grep -q '^LLM_API_KEY=' "$env_file"; then
+      # Update existing key
+      if [[ "$OS_TYPE" == "macOS" ]]; then
+        sed -i '' "s|^LLM_API_KEY=.*|LLM_API_KEY=\"$api_key\"|" "$env_file"
+      else
+        sed -i "s|^LLM_API_KEY=.*|LLM_API_KEY=\"$api_key\"|" "$env_file"
+      fi
+    else
+      # Add new key
+      echo "LLM_API_KEY=\"$api_key\"" >> "$env_file"
+    fi
+    
+    # Also update EMBEDDING_API_KEY to use the same key
+    if grep -q '^EMBEDDING_API_KEY=' "$env_file"; then
+      if [[ "$OS_TYPE" == "macOS" ]]; then
+        sed -i '' "s|^EMBEDDING_API_KEY=.*|EMBEDDING_API_KEY=\"$api_key\"|" "$env_file"
+      else
+        sed -i "s|^EMBEDDING_API_KEY=.*|EMBEDDING_API_KEY=\"$api_key\"|" "$env_file"
+      fi
+    fi
+    
+    success "API key saved to .env file"
+  else
+    info "Skipped API key configuration. You can add it later to apps/backend/.env"
+  fi
+  echo ""
+}
+
 info "Detected operating system: $OS_TYPE"
 
 #–– 1. Prerequisite checks ––#
@@ -127,12 +172,31 @@ info "Setting up backend (apps/backend)…"
   cd apps/backend
 
   # bootstrap backend .env
-  if [[ -f .env.sample && ! -f .env ]]; then
+  env_created=false
+  if [[ -f .env.example && ! -f .env ]]; then
+    info "Bootstrapping backend .env from .env.example"
+    cp .env.example .env
+    success "Backend .env created"
+    env_created=true
+  elif [[ -f .env.sample && ! -f .env ]]; then
     info "Bootstrapping backend .env from .env.sample"
     cp .env.sample .env
     success "Backend .env created"
+    env_created=true
   else
-    info "Backend .env exists or .env.sample missing—skipping"
+    info "Backend .env exists or .env template missing—skipping creation"
+  fi
+  
+  # Prompt for API key if .env was just created or if it has placeholder
+  if [[ -f .env ]]; then
+    should_prompt=false
+    if [[ "$env_created" == true ]] || grep -q 'LLM_API_KEY="your-openai-api-key-here"' .env || grep -q 'LLM_API_KEY=""' .env; then
+      should_prompt=true
+    fi
+    
+    if [[ "$should_prompt" == true ]]; then
+      prompt_llm_api_key ".env"
+    fi
   fi
 
   info "Syncing Python deps via uv…"

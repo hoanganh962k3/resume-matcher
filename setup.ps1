@@ -55,6 +55,50 @@ function Write-CustomError {
     exit 1
 }
 
+function Prompt-LLMApiKey {
+    param([string]$EnvFilePath)
+    
+    Write-Host ""
+    Write-Host "============================================" -ForegroundColor Cyan
+    Write-Host "   OpenAI API Key Configuration" -ForegroundColor Cyan
+    Write-Host "============================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "To use AI features, you need an OpenAI API key." -ForegroundColor Yellow
+    Write-Host "Get your API key at: https://platform.openai.com/api-keys" -ForegroundColor Yellow
+    Write-Host ""
+    
+    $apiKey = Read-Host "Enter your OpenAI API key (or press Enter to skip)"
+    
+    if ($apiKey -and $apiKey.Trim() -ne "") {
+        # Read the current .env file
+        $envContent = Get-Content $EnvFilePath -Raw
+        
+        # Update or add the LLM_API_KEY
+        if ($envContent -match 'LLM_API_KEY="[^"]*"') {
+            $envContent = $envContent -replace 'LLM_API_KEY="[^"]*"', "LLM_API_KEY=`"$apiKey`""
+        } elseif ($envContent -match 'LLM_API_KEY=[^\r\n]*') {
+            $envContent = $envContent -replace 'LLM_API_KEY=[^\r\n]*', "LLM_API_KEY=`"$apiKey`""
+        } else {
+            # Add the key if it doesn't exist
+            $envContent = $envContent.TrimEnd() + "`r`nLLM_API_KEY=`"$apiKey`""
+        }
+        
+        # Also update EMBEDDING_API_KEY to use the same key
+        if ($envContent -match 'EMBEDDING_API_KEY="[^"]*"') {
+            $envContent = $envContent -replace 'EMBEDDING_API_KEY="[^"]*"', "EMBEDDING_API_KEY=`"$apiKey`""
+        } elseif ($envContent -match 'EMBEDDING_API_KEY=[^\r\n]*') {
+            $envContent = $envContent -replace 'EMBEDDING_API_KEY=[^\r\n]*', "EMBEDDING_API_KEY=`"$apiKey`""
+        }
+        
+        # Write back to file
+        $envContent | Set-Content $EnvFilePath -NoNewline
+        Write-Success "API key saved to .env file"
+    } else {
+        Write-Info "Skipped API key configuration. You can add it later to apps/backend/.env"
+    }
+    Write-Host ""
+}
+
 Write-Info "Starting Resume Matcher setup..."
 
 # Detect OS
@@ -194,12 +238,29 @@ if (Test-Path "apps/backend") {
     try {
         Push-Location "apps/backend"
         
-        if ((Test-Path ".env.sample") -and (-not (Test-Path ".env"))) {
+        $envCreated = $false
+        if ((Test-Path ".env.example") -and (-not (Test-Path ".env"))) {
+            Write-Info "Bootstrapping backend .env from .env.example"
+            Copy-Item ".env.example" ".env"
+            Write-Success "Backend .env created"
+            $envCreated = $true
+        } elseif ((Test-Path ".env.sample") -and (-not (Test-Path ".env"))) {
             Write-Info "Bootstrapping backend .env from .env.sample"
             Copy-Item ".env.sample" ".env"
             Write-Success "Backend .env created"
+            $envCreated = $true
         } else {
-            Write-Info "Backend .env exists or .env.sample missing—skipping"
+            Write-Info "Backend .env exists or .env template missing—skipping creation"
+        }
+        
+        # Prompt for API key if .env was just created or if it exists but has placeholder
+        if (Test-Path ".env") {
+            $envContent = Get-Content ".env" -Raw
+            $shouldPrompt = $envCreated -or ($envContent -match 'LLM_API_KEY="your-openai-api-key-here"') -or ($envContent -match 'LLM_API_KEY=""')
+            
+            if ($shouldPrompt) {
+                Prompt-LLMApiKey -EnvFilePath ".env"
+            }
         }
 
         # Create virtual environment and install dependencies using uv
